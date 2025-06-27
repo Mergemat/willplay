@@ -20,24 +20,24 @@ export const betterAuthComponent = new BetterAuth(components.betterAuth, {
   publicAuthFunctions,
 });
 
-console.log(JSON.stringify(process.env));
-
 export const createAuth = (ctx: GenericCtx) =>
   // Configure your Better Auth instance here
   betterAuth({
     // All auth requests will be proxied through your next.js server
-    baseURL: "http://localhost:3000",
+    baseURL:
+      process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "http://localhost:3000",
     database: convexAdapter(ctx, betterAuthComponent),
 
     socialProviders: {
       discord: {
-        clientId: process.env.DISCORD_CLIENT_ID!,
-        clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+        clientId: process.env.DISCORD_CLIENT_ID ?? "",
+        clientSecret: process.env.DISCORD_CLIENT_SECRET ?? "",
       },
     },
-    plugins: [
-      // The Convex plugin is required
-      convex(),
+    plugins: [convex()],
+    trustedOrigins: [
+      "http://localhost:3000",
+      "https://willplay-ebon.vercel.app",
     ],
   });
 
@@ -50,7 +50,7 @@ export const {
   isAuthenticated,
 } = betterAuthComponent.createAuthFunctions<DataModel>({
   // Must create a user and return the user id
-  onCreateUser: async (ctx, user) => {
+  onCreateUser: (ctx, user) => {
     return ctx.db.insert("users", {
       email: user.email,
     });
