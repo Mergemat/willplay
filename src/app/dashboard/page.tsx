@@ -35,7 +35,7 @@ export default function DashboardPage() {
           <TabsTrigger value="played">Played</TabsTrigger>
         </TabsList>
         <TabsContent value="want-to-play">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 justify-center justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 10 }).map((_, i) => (
               <Card className="group w-full max-w-sm" key={i}>
                 <div className="relative aspect-video w-full overflow-hidden rounded-t-lg">
