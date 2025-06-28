@@ -24,8 +24,8 @@ export const createAuth = (ctx: GenericCtx) =>
   // Configure your Better Auth instance here
   betterAuth({
     // All auth requests will be proxied through your next.js server
-    baseURL:
-      process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "http://localhost:3000",
+    // baseURL:
+    //   process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "http://localhost:3000",
     database: convexAdapter(ctx, betterAuthComponent),
 
     socialProviders: {
@@ -35,10 +35,10 @@ export const createAuth = (ctx: GenericCtx) =>
       },
     },
     plugins: [convex()],
-    trustedOrigins: [
-      "http://localhost:3000",
-      "https://willplay-ebon.vercel.app",
-    ],
+    // trustedOrigins: [
+    //   "http://localhost:3000",
+    //   "https://willplay-ebon.vercel.app",
+    // ],
   });
 
 // These are required named exports
