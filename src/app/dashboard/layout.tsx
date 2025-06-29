@@ -1,9 +1,7 @@
 "use client";
 import { ClerkProvider, SignInButton } from "@clerk/nextjs";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
-import { toast } from "sonner";
 import LoadingSpinner from "~/components/loading-spinner";
-import { Button } from "~/components/ui/button";
 import { ConvexClientProvider } from "./_components/convex-client-provider";
 
 export default function DashboardLayout({

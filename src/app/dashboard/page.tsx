@@ -1,3 +1,5 @@
+"use client";
+import { GameSearchInput } from "~/components/game-search-input";
 import {
   Card,
   CardContent,
@@ -29,6 +31,8 @@ export default function DashboardPage() {
           </SelectContent>
         </Select>
       </div>
+
+      <GameSearchInput />
       <Tabs defaultValue="want-to-play">
         <TabsList>
           <TabsTrigger value="want-to-play">Want to Play</TabsTrigger>
