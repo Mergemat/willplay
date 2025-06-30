@@ -3,18 +3,6 @@
 
 This document outlines the build, lint, test commands, and code style guidelines for this repository.
 
-## Commands
-
-*   **Build:** `bun run build` (or `npm run build`)
-*   **Development Server:** `bun run dev` (or `npm run dev`)
-*   **Lint:** `bun run lint` (or `npm run lint`)
-*   **Lint Fix:** `bun run lint:fix` (or `npm run lint:fix`)
-*   **Type Check:** `bun run typecheck` (or `npm run typecheck`)
-*   **Format Check:** `bun run format:check` (or `npm run format:check`)
-*   **Format Write:** `bun run format:write` (or `npm run format:write`)
-
-    *Note: There isn't a dedicated "test" script. Use `typecheck` and `lint` for basic checks.*
-
 ## Code Style Guidelines
 
 - Don't use `accessKey` attribute on any HTML element.

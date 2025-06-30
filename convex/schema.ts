@@ -7,6 +7,7 @@ export default defineSchema({
     name: v.string(),
     description: v.string(),
     image: v.string(),
+    genre: v.optional(v.string()),
   })
     .index("by_steam_id", ["steamId"])
     .index("by_name", ["name"])

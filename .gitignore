@@ -45,5 +45,5 @@ yarn-error.log*
 # idea files
 .idea
 
-/convex/_generated/
-/.opencode/
+convex/_generated/
+.opencode/
