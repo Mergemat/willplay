@@ -1,13 +1,19 @@
 "use client";
-import { api } from "convex/_generated/api";
 import { useQuery } from "convex/react";
-import { on } from "events";
-import { ExternalLink, Heart } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { api } from "~/../convex/_generated/api";
 import { GameSearchInput } from "~/components/game-search-input";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent } from "~/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -24,7 +30,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto flex h-screen w-full max-w-7xl flex-col">
+    <div className="mx-auto flex h-screen w-full max-w-7xl flex-col px-4 lg:px-0">
       <GameSearchInput />
       <div className="my-8 flex items-center justify-between">
         <h1 className="font-bold text-4xl">My Games</h1>
@@ -39,9 +45,11 @@ export default function DashboardPage() {
           </SelectContent>
         </Select>
       </div>
-      {games.map((game) => (
-        <GameCard game={game} key={game?.steamId} />
-      ))}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {games.map((game) => (
+          <GameCard game={game} key={game?.steamId} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -55,7 +63,7 @@ function GameCard({
     return null;
   }
   return (
-    <Card className="group overflow-hidden transition-all duration-100 hover:border-primary/50">
+    <Card className="group overflow-hidden">
       <div className="relative">
         <Image
           alt="edd"
@@ -64,29 +72,38 @@ function GameCard({
           src={game?.image}
           width={300}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-100 group-hover:opacity-100" />
-        <div className="absolute top-3 right-3 flex gap-2">
+        <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent " />
+        <div className="absolute top-1 right-1 flex gap-2">
+          <Button asChild size="icon" title="View on Steam" variant="secondary">
+            <Link
+              href={`https://store.steampowered.com/app/${game.steamId}`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+        <div className="absolute bottom-4 left-4 flex gap-2">
           <Badge className={getPriorityColor("high")} variant="outline">
             High
           </Badge>
         </div>
-        <div className="absolute right-3 bottom-3 opacity-0 transition-opacity duration-100 group-hover:opacity-100">
-          <Button size="icon">
-            <ExternalLink className="h-4 w-4" />
-          </Button>
-        </div>
       </div>
-      <CardContent className="p-4">
-        <div className="mb-2 flex items-start justify-between">
-          <h3>{game.name}</h3>
-          <Button size="sm" variant="ghost">
-            <Heart className="h-4 w-4" />
-          </Button>
+      <CardHeader className="flex p-4 py-4">
+        <div className="flex w-full items-center gap-4">
+          <CardTitle className="line-clamp-1 font-bold text-2xl">
+            {game.name}
+          </CardTitle>
+          <Badge variant="secondary">{game.genre}</Badge>
         </div>
-        <p className="mb-3 line-clamp-2 text-slate-400 text-sm">
+        <CardDescription className="line-clamp-2">
           {game.description}
-        </p>
-      </CardContent>
+        </CardDescription>
+      </CardHeader>
+      <CardFooter className="flex items-center justify-end gap-4">
+        <Button>Add to</Button>
+      </CardFooter>
     </Card>
   );
 }

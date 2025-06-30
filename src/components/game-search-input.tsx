@@ -51,7 +51,8 @@ export function GameSearchInput() {
         name: details.data.name,
         description: details.data.short_description,
         image: details.data.header_image,
-        steamAppId: details.data.steam_appid,
+        steamId: details.data.steam_appid,
+        genre: details.data.genres[0]?.description,
       });
 
       toast.success("Game details fetched!");
