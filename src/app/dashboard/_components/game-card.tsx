@@ -21,18 +21,24 @@ export function GameCard({
     return null;
   }
   return (
-    <Card className="group">
-      <div className="relative">
+    <Card className="group transition-all duration-200 hover:shadow-md">
+      <div className="relative overflow-hidden">
         <Image
-          alt="edd"
-          className="h-48 w-full object-cover"
+          alt={game.name}
+          className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
           height={200}
           src={game?.image}
           width={300}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent " />
-        <div className="absolute top-1 right-1 flex gap-2">
-          <Button asChild size="icon" title="View on Steam" variant="secondary">
+        <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
+        <div className="absolute top-2 right-2 flex gap-2">
+          <Button
+            asChild
+            className="opacity-80 transition-opacity hover:opacity-100"
+            size="icon"
+            title="View on Steam"
+            variant="secondary"
+          >
             <Link
               href={`https://store.steampowered.com/app/${game.steamId}`}
               rel="noopener noreferrer"
@@ -49,18 +55,24 @@ export function GameCard({
         </div>
       </div>
       <CardHeader className="flex p-4 py-4">
-        <div className="flex w-full items-center gap-4">
+        <div className="flex w-full items-center justify-between gap-4">
           <CardTitle className="line-clamp-1 font-bold text-2xl">
             {game.name}
           </CardTitle>
-          <Badge variant="secondary">{game.genre}</Badge>
+          {game.genre && (
+            <Badge className="shrink-0" variant="secondary">
+              {game.genre}
+            </Badge>
+          )}
         </div>
-        <CardDescription className="line-clamp-2">
+        <CardDescription className="line-clamp-2 text-sm">
           {game.description}
         </CardDescription>
       </CardHeader>
-      <CardFooter className="flex items-center justify-end gap-4">
-        <Button>Add to</Button>
+      <CardFooter className="flex items-center justify-end ">
+        <Button className="transition-all hover:shadow-sm" size="sm">
+          Move to
+        </Button>
       </CardFooter>
     </Card>
   );
