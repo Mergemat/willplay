@@ -66,7 +66,10 @@ export const getGameDetails = action({
 });
 
 export const getUserGames = query({
-  handler: async (ctx) => {
+  args: {
+    status: schema.tables.gamelist.validator.fields.status,
+  },
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
@@ -76,6 +79,7 @@ export const getUserGames = query({
     const gameList = await ctx.db
       .query("gamelist")
       .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .filter((q) => q.eq(q.field("status"), args.status))
       .collect();
 
     const games = await Promise.all(

@@ -20,7 +20,7 @@ export default defineSchema({
     gameId: v.id("games"),
     priority: v.union(v.literal("high"), v.literal("medium"), v.literal("low")),
     status: v.union(
-      v.literal("want_to_play"),
+      v.literal("want_to_buy"),
       v.literal("in_library"),
       v.literal("played")
     ),
