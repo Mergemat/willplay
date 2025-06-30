@@ -1,9 +1,9 @@
 "use client";
-import { type Preloaded, usePreloadedQuery } from "convex/react";
+import { type Preloaded, usePreloadedQuery, useQuery } from "convex/react";
 import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { api } from "~/../convex/_generated/api";
+import { api } from "~/../convex/_generated/api";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
@@ -13,24 +13,60 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+
+type GameStatus = "want_to_buy" | "in_library" | "played";
+
+const statusLabels: Record<GameStatus, string> = {
+  want_to_buy: "Want to Buy",
+  in_library: "Want to Play",
+  played: "Played",
+};
 
 export default function GameList({
   preloadedGames,
 }: {
   preloadedGames: Preloaded<typeof api.games.getUserGames>;
 }) {
-  const games = usePreloadedQuery(preloadedGames);
+  const wantToBuyGames = usePreloadedQuery(preloadedGames);
+  const inLibraryGames = useQuery(api.games.getUserGames, {
+    status: "in_library",
+  });
+  const playedGames = useQuery(api.games.getUserGames, { status: "played" });
 
-  if (!games) {
-    return null;
-  }
+  const getGamesByStatus = (status: GameStatus) => {
+    switch (status) {
+      case "want_to_buy":
+        return wantToBuyGames || [];
+      case "in_library":
+        return inLibraryGames || [];
+      case "played":
+        return playedGames || [];
+      default:
+        return [];
+    }
+  };
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {games.map((game) => (
-        <GameCard game={game} key={game?.steamId} />
+    <Tabs defaultValue="want_to_buy">
+      <TabsList className="mb-4">
+        {Object.entries(statusLabels).map(([status, label]) => (
+          <TabsTrigger key={status} value={status}>
+            {label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+
+      {Object.keys(statusLabels).map((status) => (
+        <TabsContent key={status} value={status}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {getGamesByStatus(status as GameStatus).map((game) => (
+              <GameCard game={game} key={game?.steamId} />
+            ))}
+          </div>
+        </TabsContent>
       ))}
-    </div>
+    </Tabs>
   );
 }
 
