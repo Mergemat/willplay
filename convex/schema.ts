@@ -2,7 +2,28 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  users: defineTable({
-    email: v.string(),
-  }).index("email", ["email"]),
+  games: defineTable({
+    steamId: v.number(),
+    name: v.string(),
+    description: v.string(),
+    image: v.string(),
+  })
+    .index("by_steam_id", ["steamId"])
+    .index("by_name", ["name"])
+    .searchIndex("search_name", {
+      searchField: "name",
+    }),
+
+  gamelist: defineTable({
+    userId: v.string(),
+    gameId: v.id("games"),
+    priority: v.union(v.literal("high"), v.literal("medium"), v.literal("low")),
+    status: v.union(
+      v.literal("want_to_play"),
+      v.literal("in_library"),
+      v.literal("played")
+    ),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_and_game", ["userId", "gameId"]),
 });

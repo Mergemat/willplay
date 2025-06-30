@@ -1,11 +1,13 @@
 "use client";
+import { api } from "convex/_generated/api";
+import { useQuery } from "convex/react";
+import { on } from "events";
+import { ExternalLink, Heart } from "lucide-react";
+import Image from "next/image";
 import { GameSearchInput } from "~/components/game-search-input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "~/components/ui/card";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -13,11 +15,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export default function DashboardPage() {
+  const games = useQuery(api.games.getUserGames);
+
+  if (!games) {
+    return null;
+  }
+
   return (
     <div className="mx-auto flex h-screen w-full max-w-7xl flex-col">
+      <GameSearchInput />
       <div className="my-8 flex items-center justify-between">
         <h1 className="font-bold text-4xl">My Games</h1>
         <Select>
@@ -31,39 +39,67 @@ export default function DashboardPage() {
           </SelectContent>
         </Select>
       </div>
-
-      <GameSearchInput />
-      <Tabs defaultValue="want-to-play">
-        <TabsList>
-          <TabsTrigger value="want-to-play">Want to Play</TabsTrigger>
-          <TabsTrigger value="played">Played</TabsTrigger>
-        </TabsList>
-        <TabsContent value="want-to-play">
-          <div className="grid grid-cols-1 justify-center justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <Card className="group w-full max-w-sm" key={i}>
-                <div className="relative aspect-video w-full overflow-hidden rounded-t-lg">
-                  <div className="h-full w-full bg-secondary" />
-                </div>
-                <CardContent className="p-4">
-                  <CardTitle className="font-bold text-lg">
-                    Game Title
-                  </CardTitle>
-                  <CardDescription className="mt-1 text-sm">
-                    Game Description
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="played">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Placeholder for played games */}
-            <p>No played games yet.</p>
-          </div>
-        </TabsContent>
-      </Tabs>
+      {games.map((game) => (
+        <GameCard game={game} key={game?.steamId} />
+      ))}
     </div>
   );
 }
+
+function GameCard({
+  game,
+}: {
+  game: (typeof api.games.getUserGames._returnType)[number];
+}) {
+  if (!game) {
+    return null;
+  }
+  return (
+    <Card className="group overflow-hidden transition-all duration-100 hover:border-primary/50">
+      <div className="relative">
+        <Image
+          alt="edd"
+          className="h-48 w-full object-cover"
+          height={200}
+          src={game?.image}
+          width={300}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-100 group-hover:opacity-100" />
+        <div className="absolute top-3 right-3 flex gap-2">
+          <Badge className={getPriorityColor("high")} variant="outline">
+            High
+          </Badge>
+        </div>
+        <div className="absolute right-3 bottom-3 opacity-0 transition-opacity duration-100 group-hover:opacity-100">
+          <Button size="icon">
+            <ExternalLink className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      <CardContent className="p-4">
+        <div className="mb-2 flex items-start justify-between">
+          <h3>{game.name}</h3>
+          <Button size="sm" variant="ghost">
+            <Heart className="h-4 w-4" />
+          </Button>
+        </div>
+        <p className="mb-3 line-clamp-2 text-slate-400 text-sm">
+          {game.description}
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
+const getPriorityColor = (priority: string) => {
+  switch (priority) {
+    case "high":
+      return "bg-red-500/20 text-red-400 border-red-500/30";
+    case "medium":
+      return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+    case "low":
+      return "bg-green-500/20 text-green-400 border-green-500/30";
+    default:
+      return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+  }
+};

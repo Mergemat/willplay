@@ -8,6 +8,15 @@ import "./src/env.js";
 const config = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "shared.akamai.steamstatic.com",
+      },
+    ],
+  },
 };
 
 export default config;
