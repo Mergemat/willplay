@@ -1,6 +1,32 @@
 import { ConvexError, v } from "convex/values";
-import { action } from "./_generated/server";
+import { action, mutation, query } from "./_generated/server";
 import type { SteamApiResponse } from "./types";
+
+export const addGame = mutation({
+  args: {
+    name: v.string(),
+    description: v.string(),
+    image: v.string(),
+    steamAppId: v.number(),
+  },
+  handler: async (ctx, { name, description, image, steamAppId }) => {
+    const existingGame = await ctx.db
+      .query("games")
+      .withIndex("by_steam_id", (q) => q.eq("steamId", steamAppId))
+      .first();
+
+    if (existingGame) {
+      return existingGame;
+    }
+
+    return await ctx.db.insert("games", {
+      name,
+      description,
+      image,
+      steamId: steamAppId,
+    });
+  },
+});
 
 export const getGameDetails = action({
   args: {
@@ -39,5 +65,26 @@ export const getGameDetails = action({
         message,
       } as const;
     }
+  },
+});
+
+export const getUserGames = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      throw new ConvexError("Not authenticated");
+    }
+
+    const gameList = await ctx.db
+      .query("gamelist")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .collect();
+
+    const games = await Promise.all(
+      (gameList ?? []).map((game) => ctx.db.get(game.gameId))
+    );
+
+    return games ?? [];
   },
 });

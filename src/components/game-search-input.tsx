@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAction } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -27,6 +27,7 @@ const formSchema = z.object({
 export function GameSearchInput() {
   const [game, setGame] = useState<AppData | null>(null);
   const getGameDetails = useAction(api.games.getGameDetails);
+  const addGame = useMutation(api.games.addGame);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,6 +47,13 @@ export function GameSearchInput() {
 
     if (details) {
       setGame(details.data);
+      await addGame({
+        name: details.data.name,
+        description: details.data.short_description,
+        image: details.data.header_image,
+        steamAppId: details.data.steam_appid,
+      });
+
       toast.success("Game details fetched!");
     }
   });
