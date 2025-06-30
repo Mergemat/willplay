@@ -1,18 +1,14 @@
 import { ConvexError, v } from "convex/values";
 import { action, mutation, query } from "./_generated/server";
+import schema from "./schema";
 import type { SteamApiResponse } from "./types";
 
 export const addGame = mutation({
-  args: {
-    name: v.string(),
-    description: v.string(),
-    image: v.string(),
-    steamAppId: v.number(),
-  },
-  handler: async (ctx, { name, description, image, steamAppId }) => {
+  args: schema.tables.games.validator,
+  handler: async (ctx, { name, description, image, steamId, genre }) => {
     const existingGame = await ctx.db
       .query("games")
-      .withIndex("by_steam_id", (q) => q.eq("steamId", steamAppId))
+      .withIndex("by_steam_id", (q) => q.eq("steamId", steamId))
       .first();
 
     if (existingGame) {
@@ -23,7 +19,8 @@ export const addGame = mutation({
       name,
       description,
       image,
-      steamId: steamAppId,
+      steamId,
+      genre,
     });
   },
 });
