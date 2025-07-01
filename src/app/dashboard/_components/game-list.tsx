@@ -1,44 +1,42 @@
 "use client";
 import { type Preloaded, usePreloadedQuery, useQuery } from "convex/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 import { api } from "~/../convex/_generated/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { STATUS_LABELS, STATUSES } from "~/lib/constants";
 import type { GameStatus } from "~/lib/types";
 import { AddGameModal } from "./add-game-modal";
 import EmptyState from "./empty-state";
 import { GameCard, GameCardSkeleton } from "./game-card";
-
-const statusLabels: Record<GameStatus, string> = {
-  wishlist: "Wishlist",
-  playlist: "Playlist",
-  done: "Done",
-};
 
 export default function GameList({
   preloadedGames,
 }: {
   preloadedGames: Preloaded<typeof api.games.getUserGames>;
 }) {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const activeList = (searchParams.get("status") as GameStatus) || "wishlist";
+  const activeList = useMemo(
+    () => (searchParams.get("status") as GameStatus) || STATUSES.WISHLIST,
+    [searchParams]
+  );
 
   const wishlistGames = usePreloadedQuery(preloadedGames);
   const playlistGames = useQuery(api.games.getUserGames, {
-    status: "playlist",
+    status: STATUSES.PLAYLIST,
   });
-  const doneGames = useQuery(api.games.getUserGames, { status: "done" });
+  const doneGames = useQuery(api.games.getUserGames, { status: STATUSES.DONE });
 
   const getGamesByStatus = (status: GameStatus) => {
     switch (status) {
-      case "wishlist":
+      case STATUSES.WISHLIST:
         return wishlistGames || [];
-      case "playlist":
+      case STATUSES.PLAYLIST:
         return playlistGames || [];
-      case "done":
+      case STATUSES.DONE:
         return doneGames || [];
       default:
         return [];
@@ -47,53 +45,40 @@ export default function GameList({
 
   const isLoading = (status: GameStatus) => {
     switch (status) {
-      case "wishlist":
+      case STATUSES.WISHLIST:
         return !wishlistGames;
-      case "playlist":
+      case STATUSES.PLAYLIST:
         return playlistGames === undefined;
-      case "done":
+      case STATUSES.DONE:
         return doneGames === undefined;
       default:
         return false;
     }
   };
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams]
-  );
-
   return (
     <Tabs defaultValue={activeList}>
       <div className="mb-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
         <TabsList className="w-full sm:w-auto">
-          {Object.entries(statusLabels).map(([status, label]) => {
-            const statusTyped = status as GameStatus;
-            const games = getGamesByStatus(statusTyped);
+          {Object.values(STATUSES).map((status) => {
+            const games = getGamesByStatus(status);
             const count = games.length;
 
             return (
               <TabsTrigger
+                asChild
                 className="sm:px-4"
                 key={status}
-                onClick={() =>
-                  router.push(
-                    `${pathname}?${createQueryString("status", status)}`
-                  )
-                }
                 value={status}
               >
-                {label}
-                {count > 0 && (
-                  <span className="ml-2 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/10 px-1.5 font-medium text-primary text-xs">
-                    {count}
-                  </span>
-                )}
+                <Link href={`${pathname}?status=${status}`} prefetch={true}>
+                  {STATUS_LABELS[status]}
+                  {count > 0 && (
+                    <span className="ml-2 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/10 px-1.5 font-medium text-primary text-xs">
+                      {count}
+                    </span>
+                  )}
+                </Link>
               </TabsTrigger>
             );
           })}
@@ -101,7 +86,7 @@ export default function GameList({
         <AddGameModal />
       </div>
 
-      {Object.keys(statusLabels).map((status) => {
+      {Object.values(STATUSES).map((status) => {
         const statusTyped = status as GameStatus;
         const loading = isLoading(statusTyped);
         const games = getGamesByStatus(statusTyped);
@@ -116,25 +101,35 @@ export default function GameList({
             {isEmpty ? (
               <EmptyState />
             ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {loading ? (
-                  // Display skeletons while loading
-                  <>
-                    <GameCardSkeleton />
-                    <GameCardSkeleton />
-                    <GameCardSkeleton />
-                  </>
-                ) : (
-                  // Display actual games when loaded
-                  games.map((game) => (
-                    <GameCard game={game} key={game?.steamId} />
-                  ))
-                )}
-              </div>
+              <GameGrid games={games} loading={loading} />
             )}
           </TabsContent>
         );
       })}
     </Tabs>
+  );
+}
+
+function GameGrid({
+  games,
+  loading,
+}: {
+  games: typeof api.games.getUserGames._returnType;
+  loading: boolean;
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {loading ? (
+        // Display skeletons while loading
+        <>
+          <GameCardSkeleton />
+          <GameCardSkeleton />
+          <GameCardSkeleton />
+        </>
+      ) : (
+        // Display actual games when loaded
+        games.map((game) => <GameCard game={game} key={game?.steamId} />)
+      )}
+    </div>
   );
 }

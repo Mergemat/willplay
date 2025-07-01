@@ -13,8 +13,11 @@ export default function DashboardLayout({
     <ClerkProvider>
       <ConvexClientProvider>
         <AuthLoading>
-          <div className="flex min-h-screen items-center justify-center">
+          <div className="flex min-h-screen flex-col items-center justify-center gap-2">
             <LoadingSpinner />
+            <h2 className="text-center font-bold text-muted-foreground text-sm">
+              Authenticating...
+            </h2>
           </div>
         </AuthLoading>
         <Unauthenticated>
