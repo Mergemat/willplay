@@ -1,11 +1,10 @@
 import { useAction, useQuery } from "convex/react";
-import type { FunctionReturnType } from "convex/server";
 import { Loader2, Search } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { api } from "~/../convex/_generated/api";
-import type { Doc, Id } from "~/../convex/_generated/dataModel";
+import type { Doc } from "~/../convex/_generated/dataModel";
 import { useDebounce } from "~/hooks/use-debounce";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -79,16 +78,16 @@ function GameSearchInput({
             </div>
             // biome-ignore lint/style/noNestedTernary: <>
           ) : (searchResults?.length ?? 0) > 0 ? (
-            <div className="max-h-60 overflow-y-auto">
+            <div className="max-h-60 overflow-y-auto p-1">
               {searchResults?.map((game) => (
                 <Button
                   asChild
-                  className="h-fit w-fit"
+                  className="h-fit w-fit border-muted border-b"
                   key={game._id}
                   onClick={() => handleSelectGame(game)}
                   variant="ghost"
                 >
-                  <div className="flex w-full cursor-pointer items-center gap-3 p-3 transition-colors hover:bg-muted/50">
+                  <div className="w-full items-center gap-3 ">
                     <Image
                       alt={game.name}
                       className="h-12 w-20 rounded-sm object-cover"
@@ -97,7 +96,9 @@ function GameSearchInput({
                       width={100}
                     />
                     <div className="flex-1 overflow-hidden">
-                      <h4 className="truncate font-medium">{game.name}</h4>
+                      <h2 className="truncate font-medium text-base">
+                        {game.name}
+                      </h2>
                       <p className="truncate text-muted-foreground text-sm">
                         {game.genre}
                       </p>
