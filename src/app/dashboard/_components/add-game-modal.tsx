@@ -55,19 +55,13 @@ const formSchema = z.object({
 });
 
 export function AddGameModal() {
-  const searchParams = useSearchParams();
-  const activeList = useMemo(
-    () => (searchParams.get("status") as GameStatus) || "wishlist",
-    [searchParams]
-  );
-
   const [isOpen, setIsOpen] = useState(false);
   const addGameToList = useMutation(api.gamelist.addGameToList);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      status: activeList,
+      status: STATUSES.WISHLIST,
       priority: "medium",
     },
   });

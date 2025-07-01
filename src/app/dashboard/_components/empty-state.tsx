@@ -1,5 +1,4 @@
 import { Gamepad } from "lucide-react";
-import { Button } from "~/components/ui/button";
 
 export default function EmptyState() {
   return (
@@ -10,10 +9,6 @@ export default function EmptyState() {
       <h3 className="mt-4 font-medium text-lg">
         You don't have any games here yet.
       </h3>
-      <Button className="mt-6" variant="outline">
-        Add a game
-      </Button>
     </div>
   );
 }
-

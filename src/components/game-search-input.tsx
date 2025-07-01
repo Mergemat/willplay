@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { api } from "~/../convex/_generated/api";
-import type { Doc } from "~/../convex/_generated/dataModel";
+import type { Doc, Id } from "~/../convex/_generated/dataModel";
 import { useDebounce } from "~/hooks/use-debounce";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -126,8 +126,7 @@ function GameLinkInput({
   setMode: (mode: "search" | "link") => void;
 }) {
   const [link, setLink] = useState("");
-  const [game, setGame] =
-    useState<FunctionReturnType<typeof api.games.getGameDetails>["data"]>();
+  const [game, setGame] = useState<Partial<Doc<"games">>>();
   const [isLoading, setIsLoading] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
 
@@ -139,7 +138,7 @@ function GameLinkInput({
     if (debouncedSearchQuery) {
       setIsLoading(true);
       fetchGameByLink({ gameId: debouncedSearchQuery }).then((result) => {
-        if (result.error) {
+        if (!result.success) {
           setGame(undefined);
           setIsLoading(false);
           toast.error(result.error);
@@ -202,10 +201,10 @@ function GameLinkInput({
               >
                 <div className="flex w-full cursor-pointer items-center gap-3 p-3 transition-colors hover:bg-muted/50">
                   <Image
-                    alt={game.name}
+                    alt={game.name ?? ""}
                     className="h-12 w-20 rounded-sm object-cover"
                     height={100}
-                    src={game.image}
+                    src={game.image ?? ""}
                     width={100}
                   />
                   <div className="flex-1 overflow-hidden">
