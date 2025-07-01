@@ -20,11 +20,20 @@ export const getUserGames = query({
       .filter((q) => q.eq(q.field("status"), args.status))
       .collect();
 
-    const games = await Promise.all(
-      (gameList ?? []).map((game) => ctx.db.get(game.gameId))
-    );
+    const games =
+      (await Promise.all(
+        (gameList ?? []).map((game) => ctx.db.get(game.gameId))
+      )) ?? [];
 
-    return games ?? [];
+    return games
+      ? games.map((game) => ({
+          // biome-ignore lint/style/noNonNullAssertion: <>
+          ...game!,
+          priority:
+            gameList.find((g) => g.gameId === game?._id)?.priority ?? "",
+          status: gameList.find((g) => g.gameId === game?._id)?.status ?? "",
+        }))
+      : [];
   },
 });
 

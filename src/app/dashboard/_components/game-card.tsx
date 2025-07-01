@@ -49,8 +49,8 @@ export function GameCard({
           </Button>
         </div>
         <div className="absolute bottom-4 left-4 flex gap-2">
-          <Badge className={getPriorityColor("high")} variant="outline">
-            High
+          <Badge className={getPriorityColor(game.priority)} variant="outline">
+            {game.priority}
           </Badge>
         </div>
       </div>
@@ -69,7 +69,7 @@ export function GameCard({
           {game.description}
         </CardDescription>
       </CardHeader>
-      <CardFooter className="flex items-center justify-end ">
+      <CardFooter className="flex items-center justify-end p-4 pt-2">
         <Button className="transition-all hover:shadow-sm" size="sm">
           Move to
         </Button>
@@ -105,10 +105,12 @@ export function GameCardSkeleton() {
           <div className="h-7 w-3/4 animate-pulse rounded bg-muted" />
         </div>
         <div className="mt-1 h-4 w-full animate-pulse rounded bg-muted" />
-        <div className="mt-0 h-4 w-3/4 animate-pulse rounded bg-muted" />
+        <div className="mt-0.5 h-4 w-3/4 animate-pulse rounded bg-muted" />
       </CardHeader>
-      <CardFooter className="flex items-center justify-end gap-4">
-        <div className="h-10 w-20 animate-pulse rounded bg-muted" />
+      <CardFooter className="flex items-center justify-end gap-4 p-4 pt-2">
+        <Button className="animate-pulse rounded bg-muted" disabled size="sm">
+          Move to
+        </Button>
       </CardFooter>
     </Card>
   );
