@@ -1,8 +1,9 @@
 import { useAction, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { ExternalLink, Loader2, Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { api } from "~/../convex/_generated/api";
 import type { Doc } from "~/../convex/_generated/dataModel";
 import { useDebounce } from "~/hooks/use-debounce";
@@ -71,7 +72,7 @@ function GameSearchInput({
       </p>
 
       {debouncedSearchQuery && showSearchResults && (
-        <div className="absolute top-full z-10 w-full rounded-md border bg-popover shadow-md">
+        <div className="absolute top-10 z-10 w-full rounded-md border bg-popover shadow-md">
           {isLoading ? (
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -138,6 +139,12 @@ function GameLinkInput({
     if (debouncedSearchQuery) {
       setIsLoading(true);
       fetchGameByLink({ gameId: debouncedSearchQuery }).then((result) => {
+        if (result.error) {
+          setGame(undefined);
+          setIsLoading(false);
+          toast.error(result.error);
+          return;
+        }
         setGame(result.data);
         setIsLoading(false);
       });
@@ -155,8 +162,8 @@ function GameLinkInput({
       <Input
         className="pl-9"
         onChange={(e) => {
-          setLink(e.target.value);
           setShowSearchResults(true);
+          setLink(e.target.value);
         }}
         placeholder="https://store.steampowered.com/app/3527290/PEAK"
         value={link}
@@ -174,7 +181,7 @@ function GameLinkInput({
         .
       </p>
       {game && debouncedSearchQuery && showSearchResults && (
-        <div className="absolute top-full z-10 w-full rounded-md border bg-popover shadow-md">
+        <div className="absolute top-10 z-10 w-full rounded-md border bg-popover shadow-md">
           {isLoading ? (
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
