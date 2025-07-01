@@ -3,6 +3,24 @@ import { action, mutation, query } from "./_generated/server";
 import schema from "./schema";
 import type { SteamApiResponse } from "./types";
 
+export const findGameByName = query({
+  args: {
+    name: v.string(),
+  },
+  handler: async (ctx, { name }) => {
+    const game = await ctx.db
+      .query("games")
+      .withSearchIndex("search_name", (q) => q.search("name", name))
+      .take(3);
+
+    if (!game) {
+      return null;
+    }
+
+    return game;
+  },
+});
+
 export const addGame = mutation({
   args: schema.tables.games.validator,
   handler: async (ctx, { name, description, image, steamId, genre }) => {

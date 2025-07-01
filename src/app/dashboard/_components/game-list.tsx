@@ -1,16 +1,18 @@
 "use client";
 import { type Preloaded, usePreloadedQuery, useQuery } from "convex/react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useState } from "react";
 import { api } from "~/../convex/_generated/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import type { GameStatus } from "~/lib/types";
+import { AddGameModal } from "./add-game-modal";
 import EmptyState from "./empty-state";
 import { GameCard, GameCardSkeleton } from "./game-card";
 
-type GameStatus = "want_to_buy" | "in_library" | "played";
-
 const statusLabels: Record<GameStatus, string> = {
-  want_to_buy: "Want to Buy",
-  in_library: "Want to Play",
-  played: "Played",
+  wishlist: "Wishlist",
+  playlist: "Playlist",
+  done: "Done",
 };
 
 export default function GameList({
@@ -18,20 +20,26 @@ export default function GameList({
 }: {
   preloadedGames: Preloaded<typeof api.games.getUserGames>;
 }) {
-  const wantToBuyGames = usePreloadedQuery(preloadedGames);
-  const inLibraryGames = useQuery(api.games.getUserGames, {
-    status: "in_library",
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const activeList = (searchParams.get("status") as GameStatus) || "wishlist";
+
+  const wishlistGames = usePreloadedQuery(preloadedGames);
+  const playlistGames = useQuery(api.games.getUserGames, {
+    status: "playlist",
   });
-  const playedGames = useQuery(api.games.getUserGames, { status: "played" });
+  const doneGames = useQuery(api.games.getUserGames, { status: "done" });
 
   const getGamesByStatus = (status: GameStatus) => {
     switch (status) {
-      case "want_to_buy":
-        return wantToBuyGames || [];
-      case "in_library":
-        return inLibraryGames || [];
-      case "played":
-        return playedGames || [];
+      case "wishlist":
+        return wishlistGames || [];
+      case "playlist":
+        return playlistGames || [];
+      case "done":
+        return doneGames || [];
       default:
         return [];
     }
@@ -39,37 +47,59 @@ export default function GameList({
 
   const isLoading = (status: GameStatus) => {
     switch (status) {
-      case "want_to_buy":
-        return !wantToBuyGames;
-      case "in_library":
-        return inLibraryGames === undefined;
-      case "played":
-        return playedGames === undefined;
+      case "wishlist":
+        return !wishlistGames;
+      case "playlist":
+        return playlistGames === undefined;
+      case "done":
+        return doneGames === undefined;
       default:
         return false;
     }
   };
 
-  return (
-    <Tabs defaultValue="want_to_buy">
-      <TabsList className="mb-4">
-        {Object.entries(statusLabels).map(([status, label]) => {
-          const statusTyped = status as GameStatus;
-          const games = getGamesByStatus(statusTyped);
-          const count = games.length;
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
 
-          return (
-            <TabsTrigger key={status} value={status}>
-              {label}
-              {count > 0 && (
-                <span className="ml-2 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/10 px-1.5 font-medium text-primary text-xs">
-                  {count}
-                </span>
-              )}
-            </TabsTrigger>
-          );
-        })}
-      </TabsList>
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  return (
+    <Tabs defaultValue={activeList}>
+      <div className="mb-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+        <TabsList className="w-full sm:w-auto">
+          {Object.entries(statusLabels).map(([status, label]) => {
+            const statusTyped = status as GameStatus;
+            const games = getGamesByStatus(statusTyped);
+            const count = games.length;
+
+            return (
+              <TabsTrigger
+                className="sm:px-4"
+                key={status}
+                onClick={() =>
+                  router.push(
+                    `${pathname}?${createQueryString("status", status)}`
+                  )
+                }
+                value={status}
+              >
+                {label}
+                {count > 0 && (
+                  <span className="ml-2 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/10 px-1.5 font-medium text-primary text-xs">
+                    {count}
+                  </span>
+                )}
+              </TabsTrigger>
+            );
+          })}
+        </TabsList>
+        <AddGameModal />
+      </div>
 
       {Object.keys(statusLabels).map((status) => {
         const statusTyped = status as GameStatus;
