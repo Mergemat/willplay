@@ -15,7 +15,7 @@ import {
 export function GameCard({
   game,
 }: {
-  game: (typeof api.games.getUserGames._returnType)[number];
+  game: (typeof api.gamelist.getUserGames._returnType)[number];
 }) {
   if (!game) {
     return null;
