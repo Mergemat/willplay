@@ -1,9 +1,24 @@
 import { preloadQuery } from "convex/nextjs";
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { api } from "~/../convex/_generated/api";
 import { getAuthToken } from "~/lib/auth";
 import { STATUSES } from "~/lib/constants";
 import GameList from "./_components/game-list";
+
+export const metadata: Metadata = {
+  title: "Dashboard - Game Collection",
+  description: "Manage your game collection, organize by status, and set priorities for your gaming backlog.",
+  alternates: {
+    canonical: "/dashboard",
+  },
+  openGraph: {
+    title: "My Game Collection - WillPlay",
+    description: "Manage your game collection and track what you want to play next.",
+    url: "https://willplay.me/dashboard",
+    type: "website",
+  }
+};
 
 export default async function DashboardPage() {
   const token = await getAuthToken();
