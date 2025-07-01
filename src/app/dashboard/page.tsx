@@ -8,7 +8,7 @@ import GameList from "./_components/game-list";
 export default async function DashboardPage() {
   const token = await getAuthToken();
   const preloadedGames = await preloadQuery(
-    api.games.getUserGames,
+    api.gamelist.getUserGames,
     {
       status: STATUSES.WISHLIST,
     },

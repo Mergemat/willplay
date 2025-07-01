@@ -1,8 +1,5 @@
 "use client";
 import { type Preloaded, usePreloadedQuery, useQuery } from "convex/react";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
 import { api } from "~/../convex/_generated/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { STATUS_LABELS, STATUSES } from "~/lib/constants";
@@ -14,21 +11,18 @@ import { GameCard, GameCardSkeleton } from "./game-card";
 export default function GameList({
   preloadedGames,
 }: {
-  preloadedGames: Preloaded<typeof api.games.getUserGames>;
+  preloadedGames: Preloaded<typeof api.gamelist.getUserGames>;
 }) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const activeList = useMemo(
-    () => (searchParams.get("status") as GameStatus) || STATUSES.WISHLIST,
-    [searchParams]
-  );
+  const activeList =
+    (localStorage.getItem("activeList") as GameStatus) || STATUSES.WISHLIST;
 
   const wishlistGames = usePreloadedQuery(preloadedGames);
-  const playlistGames = useQuery(api.games.getUserGames, {
+  const playlistGames = useQuery(api.gamelist.getUserGames, {
     status: STATUSES.PLAYLIST,
   });
-  const doneGames = useQuery(api.games.getUserGames, { status: STATUSES.DONE });
+  const doneGames = useQuery(api.gamelist.getUserGames, {
+    status: STATUSES.DONE,
+  });
 
   const getGamesByStatus = (status: GameStatus) => {
     switch (status) {
@@ -66,19 +60,19 @@ export default function GameList({
 
             return (
               <TabsTrigger
-                asChild
                 className="sm:px-4"
                 key={status}
+                onClick={() => {
+                  localStorage.setItem("activeList", status);
+                }}
                 value={status}
               >
-                <Link href={`${pathname}?status=${status}`} prefetch={true}>
-                  {STATUS_LABELS[status]}
-                  {count > 0 && (
-                    <span className="ml-2 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/10 px-1.5 font-medium text-primary text-xs">
-                      {count}
-                    </span>
-                  )}
-                </Link>
+                {STATUS_LABELS[status]}
+                {count > 0 && (
+                  <span className="ml-2 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/10 px-1.5 font-medium text-primary text-xs">
+                    {count}
+                  </span>
+                )}
               </TabsTrigger>
             );
           })}
@@ -114,7 +108,7 @@ function GameGrid({
   games,
   loading,
 }: {
-  games: typeof api.games.getUserGames._returnType;
+  games: typeof api.gamelist.getUserGames._returnType;
   loading: boolean;
 }) {
   return (
