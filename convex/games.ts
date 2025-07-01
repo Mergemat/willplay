@@ -33,8 +33,6 @@ export const findGameBySteamId = query({
       .withIndex("by_steam_id", (q) => q.eq("steamId", steamId))
       .first();
 
-    console.log(game);
-
     if (!game) {
       return null;
     }
