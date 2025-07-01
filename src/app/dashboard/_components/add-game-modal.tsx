@@ -66,7 +66,7 @@ export function AddGameModal() {
     },
   });
 
-  const { isSubmitting, isValid } = form.formState;
+  const { isSubmitting } = form.formState;
 
   const selectedGame = form.watch("game");
 
