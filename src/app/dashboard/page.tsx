@@ -1,7 +1,5 @@
 import { preloadQuery } from "convex/nextjs";
-import { Plus } from "lucide-react";
 import { api } from "~/../convex/_generated/api";
-import { Button } from "~/components/ui/button";
 import { getAuthToken } from "~/lib/auth";
 import GameList from "./_components/game-list";
 
@@ -10,7 +8,7 @@ export default async function DashboardPage() {
   const preloadedGames = await preloadQuery(
     api.games.getUserGames,
     {
-      status: "want_to_buy",
+      status: "wishlist",
     },
     {
       token,
@@ -28,10 +26,6 @@ export default async function DashboardPage() {
             Manage your game collection and track what you want to play next.
           </p>
         </div>
-        <Button className="w-full gap-2 sm:w-auto" size="default">
-          <Plus className="h-4 w-4" />
-          <span>Add Game</span>
-        </Button>
       </header>
       <main className="flex-1 overflow-hidden">
         <GameList preloadedGames={preloadedGames} />
