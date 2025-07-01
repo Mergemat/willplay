@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "~/../convex/_generated/api";
-import type { Doc } from "~/../convex/_generated/dataModel";
+import type { Doc, Id } from "~/../convex/_generated/dataModel";
 import { GameInput } from "~/components/game-search-input";
 import { Button } from "~/components/ui/button";
 import {
@@ -44,10 +44,11 @@ import type { GameStatus, Priority } from "~/lib/types";
 const formSchema = z.object({
   game: z.object({
     id: z.string().optional(),
-    steamId: z.number().optional(),
+    steamId: z.number(),
     name: z.string(),
     description: z.string(),
     image: z.string(),
+    genre: z.string(),
   }),
   status: z.custom<GameStatus>(),
   priority: z.custom<Priority>(),
@@ -83,7 +84,14 @@ export function AddGameModal() {
 
     try {
       await addGameToList({
-        gameId: selectedGame.id,
+        game: {
+          id: selectedGame.id as Id<"games">,
+          steamId: selectedGame.steamId,
+          name: selectedGame.name,
+          description: selectedGame.description,
+          image: selectedGame.image,
+          genre: selectedGame.genre,
+        },
         status: values.status,
         priority: values.priority,
       });
@@ -102,10 +110,11 @@ export function AddGameModal() {
   const handleGameSelect = (game: Partial<Doc<"games">>) => {
     form.setValue("game", {
       id: game._id,
-      steamId: game.steamId,
+      steamId: game.steamId ?? 0,
       name: game.name ?? "",
       description: game.description ?? "",
       image: game.image ?? "",
+      genre: game.genre ?? "",
     });
   };
 

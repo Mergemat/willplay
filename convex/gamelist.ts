@@ -1,5 +1,6 @@
-import { ConvexError } from "convex/values";
-import { query } from "./_generated/server";
+import { ConvexError, v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
+import { mutation, query } from "./_generated/server";
 import schema from "./schema";
 
 export const getUserGames = query({
@@ -24,5 +25,62 @@ export const getUserGames = query({
     );
 
     return games ?? [];
+  },
+});
+
+export const addGameToList = mutation({
+  args: {
+    game: v.object({
+      id: v.optional(v.id("games")),
+      steamId: v.number(),
+      name: v.string(),
+      description: v.string(),
+      image: v.string(),
+      genre: v.string(),
+    }),
+    status: schema.tables.gamelist.validator.fields.status,
+    priority: schema.tables.gamelist.validator.fields.priority,
+  },
+  handler: async (ctx, { game, status, priority }) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      throw new ConvexError("Not authenticated");
+    }
+
+    let gameId = game.id;
+
+    if (gameId) {
+      const existingGame = await ctx.db
+        .query("gamelist")
+        .withIndex("by_user_and_game", (q) =>
+          q.eq("userId", identity.subject).eq("gameId", gameId as Id<"games">)
+        )
+        .first();
+
+      if (existingGame) {
+        return await ctx.db.patch(existingGame?._id, {
+          status,
+          priority,
+        });
+      }
+    }
+
+    if (!gameId) {
+      gameId = await ctx.db.insert("games", {
+        name: game.name,
+        description: game.description,
+        image: game.image,
+        steamId: game.steamId,
+        genre: game.genre,
+      });
+    }
+
+    return await ctx.db.insert("gamelist", {
+      userId: identity.subject,
+      gameId,
+      status,
+      priority,
+    });
   },
 });
