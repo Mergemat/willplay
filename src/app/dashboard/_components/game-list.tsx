@@ -124,7 +124,7 @@ function GameGrid({
         </>
       ) : (
         // Display actual games when loaded
-        games.map((game) => <GameCard game={game} key={game?.steamId} />)
+        games.map((game) => <GameCard gamelist={game} key={game._id} />)
       )}
     </div>
   );

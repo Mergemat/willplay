@@ -1,7 +1,10 @@
+"use client";
+import { useMutation } from "convex/react";
 import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { api } from "~/../convex/_generated/api";
+import { useCallback } from "react";
+import { api } from "~/../convex/_generated/api";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
@@ -11,23 +14,38 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import type { GameStatus } from "~/lib/types";
+import { MoveToButton } from "./move-to-button";
 
 export function GameCard({
-  game,
+  gamelist,
 }: {
-  game: (typeof api.gamelist.getUserGames._returnType)[number];
+  gamelist: (typeof api.gamelist.getUserGames._returnType)[number];
 }) {
-  if (!game) {
+  const changeGameStatus = useMutation(api.gamelist.changeGameStatus);
+
+  const handleMoveTo = useCallback(
+    (status: GameStatus) => {
+      changeGameStatus({
+        gameId: gamelist._id,
+        status,
+      });
+    },
+    [gamelist, changeGameStatus]
+  );
+
+  if (!gamelist) {
     return null;
   }
+
   return (
     <Card className="group transition-all duration-200 hover:shadow-md">
       <div className="relative overflow-hidden">
         <Image
-          alt={game.name}
+          alt={gamelist.game.name}
           className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
           height={200}
-          src={game?.image}
+          src={gamelist.game.image}
           width={300}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
@@ -40,7 +58,7 @@ export function GameCard({
             variant="secondary"
           >
             <Link
-              href={`https://store.steampowered.com/app/${game.steamId}`}
+              href={`https://store.steampowered.com/app/${gamelist.game.steamId}`}
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -49,27 +67,34 @@ export function GameCard({
           </Button>
         </div>
         <div className="absolute bottom-4 left-4 flex gap-2">
-          <Badge className={getPriorityColor(game.priority)} variant="outline">
-            {game.priority}
+          <Badge
+            className={getPriorityColor(gamelist.priority)}
+            variant="outline"
+          >
+            {gamelist.priority}
           </Badge>
         </div>
       </div>
       <CardHeader className="flex p-4 py-4">
         <div className="flex w-full items-center justify-between gap-4">
           <CardTitle className="line-clamp-1 font-bold text-2xl">
-            {game.name}
+            {gamelist.game.name}
           </CardTitle>
-          {game.genre && (
+          {gamelist.game.genre && (
             <Badge className="shrink-0" variant="secondary">
-              {game.genre}
+              {gamelist.game.genre}
             </Badge>
           )}
         </div>
         <CardDescription className="line-clamp-2 text-sm">
-          {game.description}
+          {gamelist.game.description}
         </CardDescription>
       </CardHeader>
       <CardFooter className="flex items-center justify-end p-4 pt-2">
+        <MoveToButton
+          changeGameStatus={handleMoveTo}
+          currentStatus={gamelist.status as GameStatus}
+        />
       </CardFooter>
     </Card>
   );

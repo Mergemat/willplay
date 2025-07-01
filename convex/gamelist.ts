@@ -25,13 +25,11 @@ export const getUserGames = query({
         (gameList ?? []).map((game) => ctx.db.get(game.gameId))
       )) ?? [];
 
-    return games
-      ? games.map((game) => ({
+    return gameList
+      ? gameList.map((list) => ({
+          ...list,
           // biome-ignore lint/style/noNonNullAssertion: <>
-          ...game!,
-          priority:
-            gameList.find((g) => g.gameId === game?._id)?.priority ?? "",
-          status: gameList.find((g) => g.gameId === game?._id)?.status ?? "",
+          game: games.find((game) => game?._id === list.gameId)!,
         }))
       : [];
   },
@@ -90,6 +88,24 @@ export const addGameToList = mutation({
       gameId,
       status,
       priority,
+    });
+  },
+});
+
+export const changeGameStatus = mutation({
+  args: {
+    gameId: v.id("gamelist"),
+    status: schema.tables.gamelist.validator.fields.status,
+  },
+  handler: async (ctx, { gameId, status }) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      throw new ConvexError("Not authenticated");
+    }
+
+    return await ctx.db.patch(gameId, {
+      status,
     });
   },
 });
