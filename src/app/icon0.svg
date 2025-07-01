@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300"><svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="300" height="300" fill="#111111"></rect>
+<path d="M100 150H133.333M116.667 133.333V166.667M175 158.333H175.083M200 141.667H200.083M83.3334 100H216.667C225.871 100 233.333 107.462 233.333 116.667V183.333C233.333 192.538 225.871 200 216.667 200H83.3334C74.1286 200 66.6667 192.538 66.6667 183.333V116.667C66.6667 107.462 74.1286 100 83.3334 100Z" stroke="#E0C2FF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>
