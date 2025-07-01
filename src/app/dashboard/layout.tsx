@@ -1,7 +1,8 @@
 "use client";
-import { ClerkProvider, SignInButton } from "@clerk/nextjs";
+import { ClerkProvider, RedirectToSignIn, SignInButton } from "@clerk/nextjs";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import LoadingSpinner from "~/components/loading-spinner";
+import { Button } from "~/components/ui/button";
 import { ConvexClientProvider } from "./_components/convex-client-provider";
 
 export default function DashboardLayout({
@@ -21,7 +22,9 @@ export default function DashboardLayout({
           </div>
         </AuthLoading>
         <Unauthenticated>
-          <SignInButton />
+          <div className="flex min-h-screen flex-col items-center justify-center gap-2">
+            <RedirectToSignIn />
+          </div>
         </Unauthenticated>
         <Authenticated>{children}</Authenticated>
       </ConvexClientProvider>
