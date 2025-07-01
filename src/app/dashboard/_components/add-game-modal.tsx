@@ -5,8 +5,7 @@ import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 import { Loader2, Plus } from "lucide-react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -38,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { STATUS_LABELS, STATUSES } from "~/lib/constants";
+import { STATUS_ICONS, STATUS_LABELS, STATUSES } from "~/lib/constants";
 import type { GameStatus, Priority } from "~/lib/types";
 
 const formSchema = z.object({
@@ -157,11 +156,15 @@ export function AddGameModal() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Object.values(STATUSES).map((status) => (
-                              <SelectItem key={status} value={status}>
-                                {STATUS_LABELS[status]}
-                              </SelectItem>
-                            ))}
+                            {Object.values(STATUSES).map((status) => {
+                              const Icon = STATUS_ICONS[status];
+                              return (
+                                <SelectItem key={status} value={status}>
+                                  <Icon className="mr-2 h-4 w-4" />
+                                  {STATUS_LABELS[status]}
+                                </SelectItem>
+                              );
+                            })}
                           </SelectContent>
                         </Select>
                         <FormMessage />

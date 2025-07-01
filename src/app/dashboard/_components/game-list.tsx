@@ -2,7 +2,7 @@
 import { type Preloaded, usePreloadedQuery, useQuery } from "convex/react";
 import { api } from "~/../convex/_generated/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { STATUS_LABELS, STATUSES } from "~/lib/constants";
+import { STATUS_ICONS, STATUS_LABELS, STATUSES } from "~/lib/constants";
 import type { GameStatus } from "~/lib/types";
 import { AddGameModal } from "./add-game-modal";
 import EmptyState from "./empty-state";
@@ -57,6 +57,7 @@ export default function GameList({
           {Object.values(STATUSES).map((status) => {
             const games = getGamesByStatus(status);
             const count = games.length;
+            const Icon = STATUS_ICONS[status];
 
             return (
               <TabsTrigger
@@ -67,6 +68,7 @@ export default function GameList({
                 }}
                 value={status}
               >
+                <Icon className="mr-2 h-4 w-4" />
                 {STATUS_LABELS[status]}
                 {count > 0 && (
                   <span className="ml-2 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/10 px-1.5 font-medium text-primary text-xs">
