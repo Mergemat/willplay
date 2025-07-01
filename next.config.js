@@ -15,6 +15,10 @@ const config = {
         protocol: "https",
         hostname: "shared.akamai.steamstatic.com",
       },
+      {
+        protocol: "https",
+        hostname: "stoic-cod-60.convex.cloud",
+      },
     ],
   },
 };
