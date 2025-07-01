@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { api } from "~/../convex/_generated/api";
 import type { Doc } from "~/../convex/_generated/dataModel";
 import { useDebounce } from "~/hooks/use-debounce";
+import { shimmer, toBase64 } from "~/lib/utils";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
@@ -92,6 +93,7 @@ function GameSearchInput({
                       alt={game.name}
                       className="h-12 w-20 rounded-sm object-cover"
                       height={100}
+                      placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(100, 100))}`}
                       src={game.image}
                       width={100}
                     />
@@ -205,6 +207,7 @@ function GameLinkInput({
                     alt={game.name ?? ""}
                     className="h-12 w-20 rounded-sm object-cover"
                     height={100}
+                    placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(100, 100))}`}
                     src={game.image ?? ""}
                     width={100}
                   />

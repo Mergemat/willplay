@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
+import { shimmer, toBase64 } from "~/lib/utils";
 
 export const metadata: Metadata = {
   title: "WillPlay - Organize Your Game Collection",
@@ -47,10 +48,11 @@ export default function HomePage() {
       <Image
         alt="Steam Library Management Dashboard"
         className="absolute top-3/5 h-2/3 w-11/12 origin-top object-cover object-left sm:object-top md:h-1/2"
-        height="992"
+        height={992}
+        placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(1280, 992))}`}
         priority
         src="https://stoic-cod-60.convex.cloud/api/storage/eacfece4-762c-40f9-b2e8-147db0c19790"
-        width="1280"
+        width={1280}
       />
     </section>
   );

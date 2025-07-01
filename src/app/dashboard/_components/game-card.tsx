@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import type { GameStatus } from "~/lib/types";
+import { shimmer, toBase64 } from "~/lib/utils";
 import { MoveToButton } from "./move-to-button";
 
 export function GameCard({
@@ -45,6 +46,7 @@ export function GameCard({
           alt={gamelist.game.name}
           className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
           height={200}
+          placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(300, 200))}`}
           src={gamelist.game.image}
           width={300}
         />
