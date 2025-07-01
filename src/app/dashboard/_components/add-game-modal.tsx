@@ -39,6 +39,7 @@ import {
 } from "~/components/ui/select";
 import { STATUS_ICONS, STATUS_LABELS, STATUSES } from "~/lib/constants";
 import type { GameStatus, Priority } from "~/lib/types";
+import { shimmer, toBase64 } from "~/lib/utils";
 
 const formSchema = z.object({
   game: z.object({
@@ -229,6 +230,7 @@ function SelectedGameView({
         alt={game.name}
         className="h-12 w-20 rounded-sm object-cover"
         height={100}
+        placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(100, 100))}`}
         src={game.image}
         width={100}
       />
