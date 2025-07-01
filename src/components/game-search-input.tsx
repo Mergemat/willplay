@@ -1,20 +1,37 @@
-import { useQuery } from "convex/react";
-import { Loader2, Search } from "lucide-react";
-import { useState } from "react";
+import { useAction, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
+import { ExternalLink, Loader2, Search } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { api } from "~/../convex/_generated/api";
 import type { Doc } from "~/../convex/_generated/dataModel";
 import { useDebounce } from "~/hooks/use-debounce";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
-interface GameSearchInputProps {
-  onGameSelect: (game: Doc<"games">) => void;
+export function GameInput({
+  onGameSelect,
+}: {
+  onGameSelect: (game: Partial<Doc<"games">>) => void;
+}) {
+  const [mode, setMode] = useState<"search" | "link">("search");
+  return mode === "search" ? (
+    <GameSearchInput onGameSelect={onGameSelect} setMode={setMode} />
+  ) : (
+    <GameLinkInput onGameSelect={onGameSelect} setMode={setMode} />
+  );
 }
 
-export function GameSearchInput({ onGameSelect }: GameSearchInputProps) {
+function GameSearchInput({
+  onGameSelect,
+  setMode,
+}: {
+  onGameSelect: (game: Partial<Doc<"games">>) => void;
+  setMode: (mode: "search" | "link") => void;
+}) {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const debouncedSearchQuery = useDebounce(searchQuery, 200);
 
   const searchResults = useQuery(api.games.findGameByName, {
     name: debouncedSearchQuery,
@@ -40,9 +57,21 @@ export function GameSearchInput({ onGameSelect }: GameSearchInputProps) {
         placeholder="Search for a game..."
         value={searchQuery}
       />
+      <p className="text-muted-foreground text-sm">
+        Can't find the game? Try adding it{" "}
+        <Button
+          className="px-0"
+          onClick={() => setMode("link")}
+          type="button"
+          variant="link"
+        >
+          with a link
+        </Button>
+        .
+      </p>
 
       {debouncedSearchQuery && showSearchResults && (
-        <div className="absolute top-full z-10 mt-2 w-full rounded-md border bg-popover shadow-md">
+        <div className="absolute top-full z-10 w-full rounded-md border bg-popover shadow-md">
           {isLoading ? (
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -59,10 +88,12 @@ export function GameSearchInput({ onGameSelect }: GameSearchInputProps) {
                   variant="ghost"
                 >
                   <div className="flex w-full cursor-pointer items-center gap-3 p-3 transition-colors hover:bg-muted/50">
-                    <img
+                    <Image
                       alt={game.name}
                       className="h-12 w-20 rounded-sm object-cover"
+                      height={100}
                       src={game.image}
+                      width={100}
                     />
                     <div className="flex-1 overflow-hidden">
                       <h4 className="truncate font-medium">{game.name}</h4>
@@ -73,6 +104,111 @@ export function GameSearchInput({ onGameSelect }: GameSearchInputProps) {
                   </div>
                 </Button>
               ))}
+            </div>
+          ) : (
+            <p className="p-4 text-center text-muted-foreground text-sm">
+              No results found.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const gameApiLinkRegex = /\/app\/(\d+)\//;
+function GameLinkInput({
+  onGameSelect,
+  setMode,
+}: {
+  onGameSelect: (game: Partial<Doc<"games">>) => void;
+  setMode: (mode: "search" | "link") => void;
+}) {
+  const [link, setLink] = useState("");
+  const [game, setGame] =
+    useState<FunctionReturnType<typeof api.games.getGameDetails>["data"]>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  const debouncedSearchQuery = useDebounce(getGameIdFromSteamLink(link), 300);
+
+  const fetchGameByLink = useAction(api.games.getGameDetails);
+
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      setIsLoading(true);
+      fetchGameByLink({ gameId: debouncedSearchQuery }).then((result) => {
+        setGame(result.data);
+        setIsLoading(false);
+      });
+    }
+  }, [debouncedSearchQuery, fetchGameByLink]);
+
+  function getGameIdFromSteamLink(url: string) {
+    const match = url.match(gameApiLinkRegex);
+    return match ? Number(match[1] ?? "") : null;
+  }
+
+  return (
+    <div className="relative">
+      <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
+      <Input
+        className="pl-9"
+        onChange={(e) => {
+          setLink(e.target.value);
+          setShowSearchResults(true);
+        }}
+        placeholder="https://store.steampowered.com/app/3527290/PEAK"
+        value={link}
+      />
+      <p className="text-muted-foreground text-sm">
+        Can't find the game? Try adding it{" "}
+        <Button
+          className="px-0"
+          onClick={() => setMode("search")}
+          type="button"
+          variant="link"
+        >
+          with a search
+        </Button>
+        .
+      </p>
+      {game && debouncedSearchQuery && showSearchResults && (
+        <div className="absolute top-full z-10 w-full rounded-md border bg-popover shadow-md">
+          {isLoading ? (
+            <div className="flex items-center justify-center p-4">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+            // biome-ignore lint/style/noNestedTernary: <>
+          ) : (setGame?.length ?? 0) > 0 ? (
+            <div className="max-h-60 overflow-y-auto">
+              <Button
+                asChild
+                className="h-fit w-fit"
+                key={game.name}
+                onClick={() => {
+                  onGameSelect(game);
+                  setLink("");
+                  setShowSearchResults(false);
+                }}
+                variant="ghost"
+              >
+                <div className="flex w-full cursor-pointer items-center gap-3 p-3 transition-colors hover:bg-muted/50">
+                  <Image
+                    alt={game.name}
+                    className="h-12 w-20 rounded-sm object-cover"
+                    height={100}
+                    src={game.image}
+                    width={100}
+                  />
+                  <div className="flex-1 overflow-hidden">
+                    <h4 className="truncate font-medium">{game.name}</h4>
+                    <p className="truncate text-muted-foreground text-sm">
+                      {game.genre}
+                    </p>
+                  </div>
+                </div>
+              </Button>
             </div>
           ) : (
             <p className="p-4 text-center text-muted-foreground text-sm">

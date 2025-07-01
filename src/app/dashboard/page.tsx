@@ -1,6 +1,8 @@
 import { preloadQuery } from "convex/nextjs";
+import { Suspense } from "react";
 import { api } from "~/../convex/_generated/api";
 import { getAuthToken } from "~/lib/auth";
+import { STATUSES } from "~/lib/constants";
 import GameList from "./_components/game-list";
 
 export default async function DashboardPage() {
@@ -8,7 +10,7 @@ export default async function DashboardPage() {
   const preloadedGames = await preloadQuery(
     api.games.getUserGames,
     {
-      status: "wishlist",
+      status: STATUSES.WISHLIST,
     },
     {
       token,
@@ -28,7 +30,9 @@ export default async function DashboardPage() {
         </div>
       </header>
       <main className="flex-1 overflow-hidden">
-        <GameList preloadedGames={preloadedGames} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <GameList preloadedGames={preloadedGames} />
+        </Suspense>
       </main>
     </div>
   );

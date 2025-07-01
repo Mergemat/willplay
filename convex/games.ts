@@ -69,7 +69,16 @@ export const getGameDetails = action({
         } as const;
       }
 
-      return { success: true, data: steamResponse.data } as const;
+      return {
+        success: true,
+        data: {
+          name: steamResponse.data.name,
+          description: steamResponse.data.short_description,
+          image: steamResponse.data.header_image,
+          steamId: steamResponse.data.steam_appid,
+          genre: steamResponse.data.genres[1]?.description,
+        },
+      } as const;
     } catch (error) {
       const message =
         error instanceof ConvexError || error instanceof Error

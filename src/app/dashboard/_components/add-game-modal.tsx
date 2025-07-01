@@ -6,13 +6,13 @@ import { ConvexError } from "convex/values";
 import { Loader2, Plus } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "~/../convex/_generated/api";
 import type { Doc } from "~/../convex/_generated/dataModel";
-import { GameSearchInput } from "~/components/game-search-input";
+import { GameInput } from "~/components/game-search-input";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -38,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { STATUS_LABELS, STATUSES } from "~/lib/constants";
 import type { GameStatus, Priority } from "~/lib/types";
 
 const formSchema = z.object({
@@ -65,6 +66,7 @@ export function AddGameModal() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      status: activeList,
       priority: "medium",
     },
   });
@@ -97,13 +99,13 @@ export function AddGameModal() {
     }
   };
 
-  const handleGameSelect = (game: Doc<"games">) => {
+  const handleGameSelect = (game: Partial<Doc<"games">>) => {
     form.setValue("game", {
       id: game._id,
       steamId: game.steamId,
-      name: game.name,
-      description: game.description,
-      image: game.image,
+      name: game.name ?? "",
+      description: game.description ?? "",
+      image: game.image ?? "",
     });
   };
 
@@ -130,12 +132,12 @@ export function AddGameModal() {
         </DialogHeader>
         <Form {...form}>
           <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
-            <GameSearchInput onGameSelect={handleGameSelect} />
+            <GameInput onGameSelect={handleGameSelect} />
 
             {selectedGame && (
               <>
                 <SelectedGameView game={selectedGame} />
-                <div className="grid grid-cols-2 gap-4 pt-2">
+                <div className="flex items-center justify-between">
                   <FormField
                     control={form.control}
                     name="status"
@@ -143,7 +145,7 @@ export function AddGameModal() {
                       <FormItem>
                         <FormLabel>Status</FormLabel>
                         <Select
-                          defaultValue={activeList}
+                          defaultValue={field.value}
                           onValueChange={field.onChange}
                         >
                           <FormControl>
@@ -152,9 +154,11 @@ export function AddGameModal() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="wishlist">Wishlist</SelectItem>
-                            <SelectItem value="playlist">Playlist</SelectItem>
-                            <SelectItem value="done">Done</SelectItem>
+                            {Object.values(STATUSES).map((status) => (
+                              <SelectItem key={status} value={status}>
+                                {STATUS_LABELS[status]}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -220,7 +224,7 @@ function SelectedGameView({
     <div className="flex w-full items-center gap-4 rounded-lg border border-border border-dashed p-2">
       <Image
         alt={game.name}
-        className="h-10 w-16 object-cover"
+        className="h-12 w-20 rounded-sm object-cover"
         height={100}
         src={game.image}
         width={100}
