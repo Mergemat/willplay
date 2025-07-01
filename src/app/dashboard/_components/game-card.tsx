@@ -70,9 +70,6 @@ export function GameCard({
         </CardDescription>
       </CardHeader>
       <CardFooter className="flex items-center justify-end p-4 pt-2">
-        <Button className="transition-all hover:shadow-sm" size="sm">
-          Move to
-        </Button>
       </CardFooter>
     </Card>
   );
