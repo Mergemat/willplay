@@ -14,15 +14,6 @@ import type { Doc, Id } from "~/../convex/_generated/dataModel";
 import { GameInput } from "~/components/game-search-input";
 import { Button } from "~/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
-import {
   Form,
   FormControl,
   FormField,
@@ -30,6 +21,15 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
+} from "~/components/ui/revola";
 import {
   Select,
   SelectContent,
@@ -113,34 +113,37 @@ export function AddGameModal() {
   };
 
   return (
-    <Dialog
+    <ResponsiveDialog
       onOpenChange={(value) => {
         setIsOpen(value);
         form.reset();
       }}
       open={isOpen}
     >
-      <DialogTrigger asChild>
+      <ResponsiveDialogTrigger asChild>
         <Button className="w-full gap-2 sm:w-auto">
           <Plus className="h-4 w-4" />
           <span>Add Game</span>
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add a New Game</DialogTitle>
-          <DialogDescription>
+      </ResponsiveDialogTrigger>
+      <ResponsiveDialogContent className="p-6">
+        <ResponsiveDialogHeader className="">
+          <ResponsiveDialogTitle>Add a New Game</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
             Search for a game to add to your collection.
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
         <Form {...form}>
-          <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
+          <form
+            className="grid gap-6 pt-4"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
             <GameInput onGameSelect={handleGameSelect} />
 
             {selectedGame && (
-              <>
+              <div className="flex flex-col gap-6 rounded-lg border border-primary/20 border-dashed p-4">
                 <SelectedGameView game={selectedGame} />
-                <div className="flex items-center justify-between">
+                <div className="-mt-2 flex items-center justify-between">
                   <FormField
                     control={form.control}
                     name="status"
@@ -156,7 +159,7 @@ export function AddGameModal() {
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="z-[99999]">
                             {Object.values(STATUSES).map((status) => {
                               const Icon = STATUS_ICONS[status];
                               return (
@@ -187,7 +190,7 @@ export function AddGameModal() {
                               <SelectValue placeholder="Select a priority" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="z-[99999]">
                             <SelectItem value="high">High</SelectItem>
                             <SelectItem value="medium">Medium</SelectItem>
                             <SelectItem value="low">Low</SelectItem>
@@ -198,20 +201,20 @@ export function AddGameModal() {
                     )}
                   />
                 </div>
-              </>
+              </div>
             )}
-            <DialogFooter className="pt-4">
+            <ResponsiveDialogFooter className="sm:pt-6">
               <Button type="submit">
                 {isSubmitting ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
                 Add to Collection
               </Button>
-            </DialogFooter>
+            </ResponsiveDialogFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }
 
@@ -225,7 +228,7 @@ function SelectedGameView({
   };
 }) {
   return (
-    <div className="flex w-full items-center gap-4 rounded-lg border border-border border-dashed p-2">
+    <div className="flex w-full items-center gap-4 rounded-lg">
       <Image
         alt={game.name}
         className="h-12 w-20 rounded-sm object-cover"
