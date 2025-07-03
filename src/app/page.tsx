@@ -47,13 +47,15 @@ export default function HomePage() {
       </div>
       <Image
         alt="Steam Library Management Dashboard"
-        className="absolute top-3/5 h-2/3 w-11/12 origin-top object-cover object-left sm:object-top md:h-1/2"
+        className="absolute top-3/5 h-2/3 w-11/12 origin-top rounded-xl border border-muted border-r-0 object-cover object-left px-4 md:h-1/2 md:border-r md:object-top"
         height={992}
         placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(1280, 992))}`}
         priority
         src="https://stoic-cod-60.convex.cloud/api/storage/eacfece4-762c-40f9-b2e8-147db0c19790"
         width={1280}
       />
+      <div className="absolute bottom-0 left-0 h-96 w-full bg-gradient-to-b from-transparent to-background" />
+      <div className="absolute bottom-0 left-0 h-96 w-full bg-gradient-to-r from-transparent to-background md:hidden" />
     </section>
   );
 }
