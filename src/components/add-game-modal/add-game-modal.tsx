@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "~/../convex/_generated/api";
 import type { Doc, Id } from "~/../convex/_generated/dataModel";
-import { GameInput } from "~/components/game-search-input";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -40,6 +39,7 @@ import {
 import { STATUS_ICONS, STATUS_LABELS, STATUSES } from "~/lib/constants";
 import type { GameStatus, Priority } from "~/lib/types";
 import { shimmer, toBase64 } from "~/lib/utils";
+import { GameInput } from "./game-search-input";
 
 const formSchema = z.object({
   game: z.object({

@@ -3,35 +3,50 @@ import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import schema from "./schema";
 
-export const getUserGames = query({
+export const getUserGameList = query({
   args: {
-    status: schema.tables.gamelist.validator.fields.status,
+    userId: v.optional(v.union(v.string(), v.null())),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, { userId }) => {
     const identity = await ctx.auth.getUserIdentity();
 
     if (identity === null) {
       throw new ConvexError("Not authenticated");
     }
 
-    const gameList = await ctx.db
+    const allGameLists = await ctx.db
       .query("gamelist")
-      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
-      .filter((q) => q.eq(q.field("status"), args.status))
+      .withIndex("by_user", (q) => q.eq("userId", userId ?? ""))
       .collect();
 
-    const games =
+    const foundGames =
       (await Promise.all(
-        (gameList ?? []).map((game) => ctx.db.get(game.gameId))
+        (allGameLists ?? []).map((game) => ctx.db.get(game.gameId))
       )) ?? [];
 
-    return gameList
-      ? gameList.map((list) => ({
+    const gamelistsWithGames = allGameLists
+      ? allGameLists.map((list) => ({
           ...list,
           // biome-ignore lint/style/noNonNullAssertion: <>
-          game: games.find((game) => game?._id === list.gameId)!,
+          game: foundGames.find((game) => game?._id === list.gameId)!,
         }))
       : [];
+
+    const wishlistGames = gamelistsWithGames.filter(
+      (game) => game.status === "wishlist"
+    );
+    const playlistGames = gamelistsWithGames.filter(
+      (game) => game.status === "playlist"
+    );
+    const doneGames = gamelistsWithGames.filter(
+      (game) => game.status === "done"
+    );
+
+    return {
+      wishlist: wishlistGames,
+      playlist: playlistGames,
+      done: doneGames,
+    };
   },
 });
 

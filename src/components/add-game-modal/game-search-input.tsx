@@ -1,14 +1,14 @@
 import { useAction, useQuery } from "convex/react";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { api } from "~/../convex/_generated/api";
 import type { Doc } from "~/../convex/_generated/dataModel";
 import { useDebounce } from "~/hooks/use-debounce";
-import { shimmer, toBase64 } from "~/lib/utils";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { cn, shimmer, toBase64 } from "~/lib/utils";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 export function GameInput({
   onGameSelect,
@@ -42,7 +42,7 @@ function GameSearchInput({
 
   const handleSelectGame = (game: Doc<"games">) => {
     onGameSelect(game);
-    setSearchQuery(game.name); // Populate input with selected game name
+    setSearchQuery(""); // Populate input with selected game name
     setShowSearchResults(false);
   };
 
@@ -58,6 +58,19 @@ function GameSearchInput({
         placeholder="Search for a game..."
         value={searchQuery}
       />
+      <Button
+        className={cn(
+          "absolute top-1 right-1 size-7",
+          !searchQuery && "hidden"
+        )}
+        onClick={() => setSearchQuery("")}
+        size="icon"
+        type="button"
+        variant="ghost"
+      >
+        <X className="h-4 w-4" />
+      </Button>
+
       <p className="text-muted-foreground text-sm">
         Can't find the game? Try adding it{" "}
         <Button
