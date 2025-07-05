@@ -1,28 +1,33 @@
 "use client";
-import { type Preloaded, usePreloadedQuery, useQuery } from "convex/react";
-import { api } from "~/../convex/_generated/api";
+import { useUser } from "@clerk/nextjs";
+import { type Preloaded, usePreloadedQuery } from "convex/react";
+import { Share } from "lucide-react";
+import { toast } from "sonner";
+import type { api } from "~/../convex/_generated/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { STATUS_ICONS, STATUS_LABELS, STATUSES } from "~/lib/constants";
 import type { GameStatus } from "~/lib/types";
 import { AddGameModal } from "./add-game-modal";
 import EmptyState from "./empty-state";
 import { GameCard, GameCardSkeleton } from "./game-card";
+import { Button } from "./ui/button";
 
-export default function GameList({
+export function GameList({
   preloadedGames,
+  isPreview = false,
 }: {
-  preloadedGames: Preloaded<typeof api.gamelist.getUserGames>;
+  preloadedGames: Preloaded<typeof api.gamelist.getUserGameList>;
+  isPreview?: boolean;
 }) {
+  const session = useUser();
   const activeList =
     (localStorage.getItem("activeList") as GameStatus) || STATUSES.WISHLIST;
 
-  const wishlistGames = usePreloadedQuery(preloadedGames);
-  const playlistGames = useQuery(api.gamelist.getUserGames, {
-    status: STATUSES.PLAYLIST,
-  });
-  const doneGames = useQuery(api.gamelist.getUserGames, {
-    status: STATUSES.DONE,
-  });
+  const {
+    wishlist: wishlistGames,
+    playlist: playlistGames,
+    done: doneGames,
+  } = usePreloadedQuery(preloadedGames);
 
   const getGamesByStatus = (status: GameStatus) => {
     switch (status) {
@@ -79,7 +84,30 @@ export default function GameList({
             );
           })}
         </TabsList>
-        <AddGameModal />
+        <div className="flex items-center gap-4">
+          {isPreview ? null : <AddGameModal />}
+          {isPreview ? null : (
+            <Button
+              onClick={() => {
+                // add to clipboard
+                toast.promise(
+                  navigator.clipboard.writeText(
+                    `https://willplay.me/${session.user?.id}`
+                  ),
+                  {
+                    loading: "Copying link...",
+                    success: "Link copied to clipboard!",
+                    error: "Failed to copy link to clipboard.",
+                  }
+                );
+              }}
+              size="icon"
+              variant="secondary"
+            >
+              <Share className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {Object.values(STATUSES).map((status) => {
@@ -97,7 +125,7 @@ export default function GameList({
             {isEmpty ? (
               <EmptyState />
             ) : (
-              <GameGrid games={games} loading={loading} />
+              <GameGrid games={games} isPreview={isPreview} loading={loading} />
             )}
           </TabsContent>
         );
@@ -109,9 +137,11 @@ export default function GameList({
 function GameGrid({
   games,
   loading,
+  isPreview,
 }: {
-  games: typeof api.gamelist.getUserGames._returnType;
+  games: (typeof api.gamelist.getUserGameList._returnType)[GameStatus];
   loading: boolean;
+  isPreview?: boolean;
 }) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -124,7 +154,9 @@ function GameGrid({
         </>
       ) : (
         // Display actual games when loaded
-        games.map((game) => <GameCard gamelist={game} key={game._id} />)
+        games.map((game) => (
+          <GameCard gamelist={game} isPreview={isPreview} key={game._id} />
+        ))
       )}
     </div>
   );

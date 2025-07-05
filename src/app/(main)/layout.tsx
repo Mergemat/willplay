@@ -1,8 +1,9 @@
 "use client";
-import { ClerkProvider, RedirectToSignIn } from "@clerk/nextjs";
+import { ClerkProvider, RedirectToSignIn, UserButton } from "@clerk/nextjs";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
+import Link from "next/link";
 import LoadingSpinner from "~/components/loading-spinner";
-import { ConvexClientProvider } from "./_components/convex-client-provider";
+import { ConvexClientProvider } from "./convex-client-provider";
 
 export default function DashboardLayout({
   children,
@@ -25,7 +26,17 @@ export default function DashboardLayout({
             <RedirectToSignIn />
           </div>
         </Unauthenticated>
-        <Authenticated>{children}</Authenticated>
+        <Authenticated>
+          <nav className="sticky top-0 flex items-center justify-between gap-4 bg-background p-4">
+            <Link className="font-bold text-3xl" href="/dashboard">
+              WillPlay
+            </Link>
+            <div className="flex items-center gap-4">
+              <UserButton />
+            </div>
+          </nav>
+          {children}
+        </Authenticated>
       </ConvexClientProvider>
     </ClerkProvider>
   );

@@ -20,8 +20,10 @@ import { MoveToButton } from "./move-to-button";
 
 export function GameCard({
   gamelist,
+  isPreview,
 }: {
-  gamelist: (typeof api.gamelist.getUserGames._returnType)[number];
+  gamelist: (typeof api.gamelist.getUserGameList._returnType)[GameStatus][number];
+  isPreview?: boolean;
 }) {
   const changeGameStatus = useMutation(api.gamelist.changeGameStatus);
 
@@ -93,10 +95,12 @@ export function GameCard({
         </CardDescription>
       </CardHeader>
       <CardFooter className="flex items-center justify-end p-4 pt-2">
-        <MoveToButton
-          changeGameStatus={handleMoveTo}
-          currentStatus={gamelist.status as GameStatus}
-        />
+        {isPreview ? null : (
+          <MoveToButton
+            changeGameStatus={handleMoveTo}
+            currentStatus={gamelist.status as GameStatus}
+          />
+        )}
       </CardFooter>
     </Card>
   );
@@ -124,14 +128,14 @@ export function GameCardSkeleton() {
           <div className="h-6 w-16 animate-pulse rounded-full bg-muted" />
         </div>
       </div>
-      <CardHeader className="flex p-4 py-4">
+      <CardHeader className="flex p-4 pb-2.5">
         <div className="flex w-full items-center gap-4">
-          <div className="h-7 w-3/4 animate-pulse rounded bg-muted" />
+          <div className="h-8 w-1/2 animate-pulse rounded bg-muted" />
         </div>
-        <div className="mt-1 h-4 w-full animate-pulse rounded bg-muted" />
-        <div className="mt-0.5 h-4 w-3/4 animate-pulse rounded bg-muted" />
+        <div className="mt-1 h-3 w-full animate-pulse rounded bg-muted" />
+        <div className="mt-1 h-3 w-3/4 animate-pulse rounded bg-muted" />
       </CardHeader>
-      <CardFooter className="flex items-center justify-end gap-4 p-4 pt-2">
+      <CardFooter className="flex items-center justify-end gap-4 pt-2">
         <Button className="animate-pulse rounded bg-muted" disabled size="sm">
           Move to
         </Button>
