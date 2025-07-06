@@ -146,7 +146,7 @@ function GameLinkInput({
   const [isLoading, setIsLoading] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
 
-  const debouncedSearchQuery = useDebounce(getGameIdFromSteamLink(link), 300);
+  const debouncedSearchQuery = useDebounce(getGameIdFromSteamLink(link), 100);
 
   const fetchGameByLink = useAction(api.games.getGameDetails);
 
