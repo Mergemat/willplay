@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { PRIORITY_COLORS, PRIORITY_ICONS } from "~/lib/constants";
 import type { GameStatus } from "~/lib/types";
 import { shimmer, toBase64 } from "~/lib/utils";
 import { MoveToButton } from "./move-to-button";
@@ -36,6 +37,8 @@ export function GameCard({
     },
     [gamelist, changeGameStatus]
   );
+
+  const PriorityIcon = PRIORITY_ICONS[gamelist.priority];
 
   if (!gamelist) {
     return null;
@@ -72,9 +75,10 @@ export function GameCard({
         </div>
         <div className="absolute bottom-4 left-4 flex gap-2">
           <Badge
-            className={getPriorityColor(gamelist.priority)}
+            className={PRIORITY_COLORS[gamelist.priority]}
             variant="outline"
           >
+            <PriorityIcon className="h-4 w-4" />
             {gamelist.priority}
           </Badge>
         </div>
@@ -105,19 +109,6 @@ export function GameCard({
     </Card>
   );
 }
-
-const getPriorityColor = (priority: string) => {
-  switch (priority) {
-    case "high":
-      return "bg-red-500/20 text-red-400 border-red-500/30";
-    case "medium":
-      return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-    case "low":
-      return "bg-green-500/20 text-green-400 border-green-500/30";
-    default:
-      return "bg-gray-500/20 text-gray-400 border-gray-500/30";
-  }
-};
 
 export function GameCardSkeleton() {
   return (

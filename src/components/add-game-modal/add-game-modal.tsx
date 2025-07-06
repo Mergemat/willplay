@@ -36,7 +36,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { STATUS_ICONS, STATUS_LABELS, STATUSES } from "~/lib/constants";
+import {
+  PRIORITIES,
+  PRIORITY_ICONS,
+  PRIORITY_LABELS,
+  STATUS_ICONS,
+  STATUS_LABELS,
+  STATUSES,
+} from "~/lib/constants";
 import type { GameStatus, Priority } from "~/lib/types";
 import { shimmer, toBase64 } from "~/lib/utils";
 import { GameInput } from "./game-search-input";
@@ -191,9 +198,15 @@ export function AddGameModal() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="z-[99999]">
-                            <SelectItem value="high">High</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="low">Low</SelectItem>
+                            {Object.values(PRIORITIES).map((priority) => {
+                              const Icon = PRIORITY_ICONS[priority];
+                              return (
+                                <SelectItem key={priority} value={priority}>
+                                  <Icon className="mr-2 h-4 w-4" />
+                                  {PRIORITY_LABELS[priority]}
+                                </SelectItem>
+                              );
+                            })}
                           </SelectContent>
                         </Select>
                         <FormMessage />
