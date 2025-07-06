@@ -1,11 +1,13 @@
+"use client";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import { type MotionProps, motion } from "motion/react";
 import type * as React from "react";
 
 import { cn } from "~/lib/utils";
 
 const buttonVariants = cva(
-  "dark:aria-invalid:ring-destructive/40'size-'])]:size-4 inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all [&_svg:not([class*= focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "dark:aria-invalid:ring-destructive/40'size-'])]:size-4 inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-colors [&_svg:not([class*= focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -42,15 +44,22 @@ function Button({
   asChild = false,
   ...props
 }: React.ComponentProps<"button"> &
+  MotionProps &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
   }) {
-  const Comp = asChild ? Slot : "button";
+  const Comp = asChild ? motion(Slot) : motion.button;
 
   return (
     <Comp
       className={cn(buttonVariants({ variant, size, className }))}
       data-slot="button"
+      whileHover={{
+        scale: 1.05,
+      }}
+      whileTap={{
+        scale: 0.95,
+      }}
       {...props}
     />
   );
