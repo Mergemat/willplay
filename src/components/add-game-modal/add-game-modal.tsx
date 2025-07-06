@@ -13,6 +13,15 @@ import { api } from "~/../convex/_generated/api";
 import type { Doc, Id } from "~/../convex/_generated/dataModel";
 import { Button } from "~/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import {
   Form,
   FormControl,
   FormField,
@@ -20,15 +29,6 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import {
-  ResponsiveDialog,
-  ResponsiveDialogContent,
-  ResponsiveDialogDescription,
-  ResponsiveDialogFooter,
-  ResponsiveDialogHeader,
-  ResponsiveDialogTitle,
-  ResponsiveDialogTrigger,
-} from "~/components/ui/revola";
 import {
   Select,
   SelectContent,
@@ -120,30 +120,29 @@ export function AddGameModal() {
   };
 
   return (
-    <ResponsiveDialog
-      autoFocus={false}
+    <Dialog
       onOpenChange={(value) => {
         setIsOpen(value);
         form.reset();
       }}
       open={isOpen}
     >
-      <ResponsiveDialogTrigger asChild>
+      <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
           <span>Add Game</span>
         </Button>
-      </ResponsiveDialogTrigger>
-      <ResponsiveDialogContent className="h-svh p-6 sm:h-auto">
-        <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>Add a New Game</ResponsiveDialogTitle>
-          <ResponsiveDialogDescription>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add a New Game</DialogTitle>
+          <DialogDescription>
             Search for a game to add to your collection.
-          </ResponsiveDialogDescription>
-        </ResponsiveDialogHeader>
+          </DialogDescription>
+        </DialogHeader>
         <Form {...form}>
           <form
-            className="grid gap-6 pt-4"
+            className="grid gap-6 pt-2"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <GameInput onGameSelect={handleGameSelect} />
@@ -217,18 +216,18 @@ export function AddGameModal() {
                 </div>
               </div>
             )}
-            <ResponsiveDialogFooter className="sm:pt-6">
+            <DialogFooter>
               <Button type="submit">
                 {isSubmitting ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
                 Add to Collection
               </Button>
-            </ResponsiveDialogFooter>
+            </DialogFooter>
           </form>
         </Form>
-      </ResponsiveDialogContent>
-    </ResponsiveDialog>
+      </DialogContent>
+    </Dialog>
   );
 }
 
