@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
 import { preloadQuery } from "convex/nextjs";
 import type { Metadata } from "next";
 import { Suspense } from "react";

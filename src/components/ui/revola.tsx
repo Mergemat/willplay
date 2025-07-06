@@ -103,7 +103,7 @@ const ResponsiveDialog = ({
   const isMobile = useMediaQuery("(min-width: 640px)");
 
   const shouldUseDialog = onlyDialog || (!onlyDrawer && isMobile);
-  const ResponsiveDialog = shouldUseDialog ? Root : DrawerPrimitive.Root;
+  const TResponsiveDialog = shouldUseDialog ? Root : DrawerPrimitive.Root;
 
   const effectiveModal = alert ? true : modal;
   const effectiveDismissible = alert ? true : dismissible;
@@ -117,7 +117,7 @@ const ResponsiveDialog = ({
       onlyDialog={onlyDialog}
       onlyDrawer={onlyDrawer}
     >
-      <ResponsiveDialog
+      <TResponsiveDialog
         direction={direction}
         dismissible={effectiveDismissible}
         modal={effectiveModal}
@@ -153,10 +153,10 @@ const ResponsiveDialogPortal = ({
   const isMobile = useMediaQuery("(min-width: 640px)");
 
   const shouldUseDialog = onlyDialog || (!onlyDrawer && isMobile);
-  const ResponsiveDialogPortal = shouldUseDialog
+  const TResponsiveDialogPortal = shouldUseDialog
     ? Portal
     : DrawerPrimitive.Portal;
-  return <ResponsiveDialogPortal {...props} />;
+  return <TResponsiveDialogPortal {...props} />;
 };
 ResponsiveDialogPortal.displayName = "ResponsiveDialogPortal";
 
@@ -168,11 +168,11 @@ const ResponsiveDialogOverlay = ({
   const isMobile = useMediaQuery("(min-width: 640px)");
 
   const shouldUseDialog = onlyDialog || (!onlyDrawer && isMobile);
-  const ResponsiveDialogOverlay = shouldUseDialog
+  const TResponsiveDialogOverlay = shouldUseDialog
     ? Overlay
     : DrawerPrimitive.Overlay;
   return (
-    <ResponsiveDialogOverlay
+    <TResponsiveDialogOverlay
       {...props}
       className={cn(
         "sm:data-[state=closed]:fade-out-0 sm:data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/40 sm:data-[state=closed]:animate-out sm:data-[state=open]:animate-in",
@@ -188,12 +188,14 @@ const ResponsiveDialogClose = ({ ...props }: ComponentProps<typeof Close>) => {
   const isMobile = useMediaQuery("(min-width: 640px)");
 
   const shouldUseDialog = onlyDialog || (!onlyDrawer && isMobile);
-  const ResponsiveDialogClose = shouldUseDialog ? Close : DrawerPrimitive.Close;
+  const TResponsiveDialogClose = shouldUseDialog
+    ? Close
+    : DrawerPrimitive.Close;
 
   const shouldPreventClose = !(dismissible || alert);
 
   return (
-    <ResponsiveDialogClose
+    <TResponsiveDialogClose
       aria-label="Close"
       {...(shouldPreventClose && { onClick: (e) => e.preventDefault() })}
       {...props}
@@ -206,7 +208,7 @@ const ResponsiveDialogContentVariants = cva("fixed z-[9999] bg-background", {
   variants: {
     device: {
       desktop:
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 top-[50%] left-[50%] grid h-auto max-h-[min(640px,80dvh)] w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in",
+        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-[48%] top-[50%] left-[50%] grid h-auto max-h-[min(640px,80dvh)] w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in",
       mobile: "flex ",
     },
     direction: {
@@ -259,7 +261,9 @@ const ResponsiveDialogContent = forwardRef<
 
   const isMobile = useMediaQuery("(min-width: 640px)");
   const shouldUseDialog = onlyDialog || (!onlyDrawer && isMobile);
-  const ResponsiveDialogContent = shouldUseDialog ? Content : VaulDrawerContent;
+  const TResponsiveDialogContent = shouldUseDialog
+    ? Content
+    : VaulDrawerContent;
 
   const shouldPreventEscape = !(dismissible || alert);
   const shouldPreventOutsideInteraction =
@@ -268,7 +272,7 @@ const ResponsiveDialogContent = forwardRef<
   return (
     <ResponsiveDialogPortal>
       <ResponsiveDialogOverlay />
-      <ResponsiveDialogContent
+      <TResponsiveDialogContent
         ref={ref}
         {...props}
         {...(shouldPreventEscape &&
@@ -301,7 +305,7 @@ const ResponsiveDialogContent = forwardRef<
             </ResponsiveDialogClose>
           ))}
         {children}
-      </ResponsiveDialogContent>
+      </TResponsiveDialogContent>
     </ResponsiveDialogPortal>
   );
 });
@@ -347,9 +351,11 @@ const ResponsiveDialogTitle = forwardRef<
   const isMobile = useMediaQuery("(min-width: 640px)");
 
   const shouldUseDialog = onlyDialog || (!onlyDrawer && isMobile);
-  const ResponsiveDialogTitle = shouldUseDialog ? Title : DrawerPrimitive.Title;
+  const TResponsiveDialogTitle = shouldUseDialog
+    ? Title
+    : DrawerPrimitive.Title;
   return (
-    <ResponsiveDialogTitle
+    <TResponsiveDialogTitle
       className={cn(
         "font-semibold text-lg leading-none tracking-tight",
         className
@@ -370,11 +376,11 @@ const ResponsiveDialogDescription = forwardRef<
   const isMobile = useMediaQuery("(min-width: 640px)");
 
   const shouldUseDialog = onlyDialog || (!onlyDrawer && isMobile);
-  const ResponsiveDialogDescription = shouldUseDialog
+  const TResponsiveDialogDescription = shouldUseDialog
     ? Description
     : DrawerPrimitive.Description;
   return (
-    <ResponsiveDialogDescription
+    <TResponsiveDialogDescription
       className={cn("text-muted-foreground text-sm", className)}
       ref={ref}
       {...props}

@@ -1,7 +1,7 @@
 import { useAction, useQuery } from "convex/react";
 import { Loader2, Search, X } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { api } from "~/../convex/_generated/api";
 import type { Doc } from "~/../convex/_generated/dataModel";
@@ -146,14 +146,17 @@ function GameLinkInput({
   const [isLoading, setIsLoading] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
 
-  const debouncedSearchQuery = useDebounce(getGameIdFromSteamLink(link), 100);
+  const gameIdFromSteamLink = useMemo(() => {
+    const match = link.match(gameApiLinkRegex);
+    return match ? Number(match[1] ?? "") : null;
+  }, [link]);
 
   const fetchGameByLink = useAction(api.games.getGameDetails);
 
   useEffect(() => {
-    if (debouncedSearchQuery) {
+    if (gameIdFromSteamLink) {
       setIsLoading(true);
-      fetchGameByLink({ gameId: debouncedSearchQuery }).then((result) => {
+      fetchGameByLink({ gameId: gameIdFromSteamLink }).then((result) => {
         if (!result.success) {
           setGame(undefined);
           setIsLoading(false);
@@ -164,12 +167,7 @@ function GameLinkInput({
         setIsLoading(false);
       });
     }
-  }, [debouncedSearchQuery, fetchGameByLink]);
-
-  function getGameIdFromSteamLink(url: string) {
-    const match = url.match(gameApiLinkRegex);
-    return match ? Number(match[1] ?? "") : null;
-  }
+  }, [gameIdFromSteamLink, fetchGameByLink]);
 
   return (
     <div className="relative">
@@ -195,9 +193,9 @@ function GameLinkInput({
         </Button>
         .
       </p>
-      {game && debouncedSearchQuery && showSearchResults && (
+      {gameIdFromSteamLink && showSearchResults && (
         <div className="absolute top-10 z-10 w-full rounded-md border bg-popover shadow-md">
-          {isLoading ? (
+          {isLoading || !game ? (
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>

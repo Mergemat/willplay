@@ -133,8 +133,8 @@ export function AddGameModal() {
           <span>Add Game</span>
         </Button>
       </ResponsiveDialogTrigger>
-      <ResponsiveDialogContent className="p-6">
-        <ResponsiveDialogHeader className="">
+      <ResponsiveDialogContent className="h-svh p-6 sm:h-auto">
+        <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>Add a New Game</ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
             Search for a game to add to your collection.
