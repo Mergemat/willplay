@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values";
+import { PRIORITY_SORT_ORDER } from "~/lib/constants";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import schema from "./schema";
@@ -18,6 +19,12 @@ export const getUserGameList = query({
       .query("gamelist")
       .withIndex("by_user", (q) => q.eq("userId", userId ?? ""))
       .collect();
+
+    allGameLists.sort(
+      (a, b) =>
+        PRIORITY_SORT_ORDER.indexOf(a.priority) -
+        PRIORITY_SORT_ORDER.indexOf(b.priority)
+    );
 
     const foundGames =
       (await Promise.all(
