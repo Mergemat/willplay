@@ -73,16 +73,15 @@ function GameSearchInput({
       </Button>
 
       <p className="text-muted-foreground text-sm">
-        Can't find the game? Try adding it{" "}
+        Can't find the game? Try{" "}
         <Button
           className="px-0"
           onClick={() => setMode("link")}
           type="button"
           variant="link"
         >
-          with a link
+          link
         </Button>
-        .
       </p>
 
       {debouncedSearchQuery && showSearchResults && (
@@ -134,7 +133,7 @@ function GameSearchInput({
   );
 }
 
-const gameApiLinkRegex = /\/app\/(\d+)\//;
+const gameApiLinkRegex = /\/app\/(\d+)/;
 function GameLinkInput({
   onGameSelect,
   setMode,
@@ -183,16 +182,15 @@ function GameLinkInput({
         value={link}
       />
       <p className="text-muted-foreground text-sm">
-        Can't find the game? Try adding it{" "}
+        Can't find the game? Try{" "}
         <Button
           className="px-0"
           onClick={() => setMode("search")}
           type="button"
           variant="link"
         >
-          with a search
+          search
         </Button>
-        .
       </p>
       {gameIdFromSteamLink && showSearchResults && (
         <div className="absolute top-10 z-10 w-full rounded-md border bg-popover shadow-md">
