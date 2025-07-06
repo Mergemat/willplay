@@ -1,17 +1,31 @@
 "use client";
 
 import { Content, List, Root, Trigger } from "@radix-ui/react-tabs";
+import { motion } from "framer-motion";
 import type * as React from "react";
+import { createContext, useContext, useId, useState } from "react";
 
 import { cn } from "~/lib/utils";
 
+const TabsContext = createContext<{ value: string; id: string }>({
+  value: "",
+  id: "",
+});
+
 function Tabs({ className, ...props }: React.ComponentProps<typeof Root>) {
+  const id = useId();
+  const [value, setValue] = useState(props.defaultValue);
+
   return (
-    <Root
-      className={cn("flex flex-col gap-2", className)}
-      data-slot="tabs"
-      {...props}
-    />
+    <TabsContext.Provider value={{ value: value ?? "", id }}>
+      <Root
+        {...props}
+        className={cn("flex flex-col gap-2", className)}
+        data-slot="tabs"
+        onValueChange={setValue}
+        value={value}
+      />
+    </TabsContext.Provider>
   );
 }
 
@@ -30,17 +44,41 @@ function TabsList({ className, ...props }: React.ComponentProps<typeof List>) {
 
 function TabsTrigger({
   className,
+  value,
+  children,
   ...props
 }: React.ComponentProps<typeof Trigger>) {
+  const { value: activeValue, id } = useContext(TabsContext);
+  const isActive = activeValue === value;
+
   return (
     <Trigger
+      {...props}
       className={cn(
-        "inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-transparent px-2 py-1 font-medium text-foreground text-sm transition-[color,box-shadow] focus-visible:border-ring focus-visible:outline-1 focus-visible:outline-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:shadow-sm dark:text-muted-foreground dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 dark:data-[state=active]:text-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "group relative z-20 h-[calc(100%-1px)] flex-1 items-center justify-center whitespace-nowrap px-2 py-1 font-medium text-foreground text-sm transition-[color,box-shadow] focus-visible:border-ring focus-visible:outline-1 focus-visible:outline-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 dark:text-muted-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className
       )}
       data-slot="tabs-trigger"
-      {...props}
-    />
+      style={{
+        WebkitTapHighlightColor: "transparent",
+      }}
+      value={value}
+    >
+      <span className="z-30 inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap group-data-[state=active]:text-foreground">
+        {children}
+      </span>
+      {isActive && (
+        <motion.div
+          className="absolute inset-0 z-10 rounded-md border shadow-sm dark:border-input"
+          layoutId={`active-tab-indicator-${id}`}
+          transition={{
+            type: "spring",
+            bounce: 0.25,
+            duration: 0.5,
+          }}
+        />
+      )}
+    </Trigger>
   );
 }
 

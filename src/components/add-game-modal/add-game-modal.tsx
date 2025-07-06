@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 import { Loader2, Plus } from "lucide-react";
+import { motion } from "motion/react";
 import Image from "next/image";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -153,7 +154,19 @@ export function AddGameModal() {
             <GameInput onGameSelect={handleGameSelect} />
 
             {selectedGame && (
-              <div className="flex flex-col gap-6 rounded-lg border border-primary/20 border-dashed p-4">
+              <motion.div
+                animate={{ opacity: 1, scale: 1, borderWidth: "1px" }}
+                className="flex flex-col gap-6 rounded-lg border border-primary/20 border-dashed p-4"
+                exit={{ opacity: 0, scale: 0.95, borderWidth: "0px" }}
+                initial={{ opacity: 0, scale: 0.95, borderWidth: "0px" }}
+                key={selectedGame.id}
+                layout
+                transition={{
+                  type: "spring",
+                  damping: 20,
+                  stiffness: 300,
+                }}
+              >
                 <SelectedGameView game={selectedGame} />
                 <div className="-mt-2 flex items-center justify-between">
                   <FormField
@@ -219,7 +232,7 @@ export function AddGameModal() {
                     )}
                   />
                 </div>
-              </div>
+              </motion.div>
             )}
             <DialogFooter>
               <Button type="submit">
