@@ -134,6 +134,7 @@ export function AddGameModal() {
         </Button>
       </DialogTrigger>
       <DialogContent
+        className="p-4 sm:p-6"
         onOpenAutoFocus={(e) => {
           e.preventDefault();
         }}
