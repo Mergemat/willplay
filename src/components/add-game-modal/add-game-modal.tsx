@@ -128,7 +128,7 @@ export function AddGameModal() {
       open={isOpen}
     >
       <ResponsiveDialogTrigger asChild>
-        <Button className="w-full gap-2 sm:w-auto">
+        <Button className="gap-2">
           <Plus className="h-4 w-4" />
           <span>Add Game</span>
         </Button>

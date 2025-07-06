@@ -58,7 +58,7 @@ export function GameList({
   return (
     <Tabs defaultValue={activeList}>
       <div className="mb-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-        <TabsList className="w-full sm:w-auto">
+        <TabsList className="h-fit w-full justify-start overflow-x-scroll sm:w-fit sm:overflow-x-visible">
           {Object.values(STATUSES).map((status) => {
             const games = getGamesByStatus(status);
             const count = games.length;
@@ -66,7 +66,7 @@ export function GameList({
 
             return (
               <TabsTrigger
-                className="sm:px-4"
+                className="box-border sm:px-4"
                 key={status}
                 onClick={() => {
                   localStorage.setItem("activeList", status);
@@ -84,29 +84,27 @@ export function GameList({
             );
           })}
         </TabsList>
-        <div className="flex items-center gap-4">
+        <div className="flex w-full items-center justify-end gap-4">
           {isPreview ? null : <AddGameModal />}
-          {isPreview ? null : (
-            <Button
-              onClick={() => {
-                // add to clipboard
-                toast.promise(
-                  navigator.clipboard.writeText(
-                    `https://willplay.me/${session.user?.id}`
-                  ),
-                  {
-                    loading: "Copying link...",
-                    success: "Link copied to clipboard!",
-                    error: "Failed to copy link to clipboard.",
-                  }
-                );
-              }}
-              size="icon"
-              variant="secondary"
-            >
-              <Share className="h-4 w-4" />
-            </Button>
-          )}
+          <Button
+            onClick={() => {
+              // add to clipboard
+              toast.promise(
+                navigator.clipboard.writeText(
+                  `https://willplay.me/${session.user?.id}`
+                ),
+                {
+                  loading: "Copying link...",
+                  success: "Link copied to clipboard!",
+                  error: "Failed to copy link to clipboard.",
+                }
+              );
+            }}
+            size="icon"
+            variant="secondary"
+          >
+            <Share className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
