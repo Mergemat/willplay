@@ -27,7 +27,7 @@ export default function DashboardLayout({
           </div>
         </Unauthenticated>
         <Authenticated>
-          <nav className="sticky top-0 flex items-center justify-between gap-4 bg-background p-4">
+          <nav className="sticky top-0 z-50 flex items-center justify-between gap-4 bg-background p-4">
             <Link className="font-bold text-3xl" href="/dashboard">
               WillPlay
             </Link>
