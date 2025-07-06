@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <section className="relative mx-auto flex h-svh w-full justify-center overflow-hidden">
-      <div className="container flex h-2/3 flex-col justify-center px-4 md:px-6">
+      <div className="container z-10 flex h-2/3 flex-col justify-center px-4 md:px-6">
         <div className="mx-auto flex max-w-4xl flex-col items-center justify-center space-y-8 text-center">
           <div className="space-y-6">
             <h1 className="font-extrabold text-5xl text-white tracking-tight sm:text-6xl xl:text-7xl/none">
