@@ -121,6 +121,7 @@ export function AddGameModal() {
 
   return (
     <ResponsiveDialog
+      autoFocus={false}
       onOpenChange={(value) => {
         setIsOpen(value);
         form.reset();
