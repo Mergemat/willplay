@@ -1,5 +1,6 @@
 import { useAction, useQuery } from "convex/react";
 import { Loader2, Search, X } from "lucide-react";
+import { motion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -85,14 +86,26 @@ function GameSearchInput({
       </p>
 
       {debouncedSearchQuery && showSearchResults && (
-        <div className="absolute top-10 z-10 w-full rounded-md border bg-popover shadow-md">
+        <motion.div
+          animate={{ opacity: 1, borderWidth: "1px" }}
+          className="absolute top-10 z-10 w-full rounded-md border border-input bg-popover shadow-md"
+          exit={{ opacity: 0, borderWidth: "0px" }}
+          initial={{ opacity: 0, borderWidth: "0px" }}
+          layout
+          transition={{
+            type: "spring",
+            damping: 30,
+            stiffness: 500,
+            duration: 0.2,
+          }}
+        >
           {isLoading ? (
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
             // biome-ignore lint/style/noNestedTernary: <>
           ) : (searchResults?.length ?? 0) > 0 ? (
-            <div className="max-h-60 overflow-y-auto p-1">
+            <div className="max-h-60 overflow-y-auto overflow-x-hidden p-1">
               {searchResults?.map((game) => (
                 <Button
                   asChild
@@ -127,7 +140,7 @@ function GameSearchInput({
               No results found.
             </p>
           )}
-        </div>
+        </motion.div>
       )}
     </div>
   );
@@ -193,14 +206,26 @@ function GameLinkInput({
         </Button>
       </p>
       {gameIdFromSteamLink && showSearchResults && (
-        <div className="absolute top-10 z-10 w-full rounded-md border bg-popover shadow-md">
+        <motion.div
+          animate={{ opacity: 1, borderWidth: "1px" }}
+          className="absolute top-10 z-10 w-full rounded-md border border-input bg-popover shadow-md"
+          exit={{ opacity: 0, borderWidth: "0px" }}
+          initial={{ opacity: 0, borderWidth: "0px" }}
+          layout
+          transition={{
+            type: "spring",
+            damping: 30,
+            stiffness: 500,
+            duration: 0.2,
+          }}
+        >
           {isLoading || !game ? (
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
             // biome-ignore lint/style/noNestedTernary: <>
           ) : (setGame?.length ?? 0) > 0 ? (
-            <div className="max-h-60 overflow-y-auto">
+            <div className="max-h-60 overflow-x-hidden overflow-y-hidden">
               <Button
                 asChild
                 className="h-fit w-fit"
@@ -235,7 +260,7 @@ function GameLinkInput({
               No results found.
             </p>
           )}
-        </div>
+        </motion.div>
       )}
     </div>
   );
