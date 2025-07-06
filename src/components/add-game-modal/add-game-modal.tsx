@@ -133,7 +133,11 @@ export function AddGameModal() {
           <span>Add Game</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Add a New Game</DialogTitle>
           <DialogDescription>
