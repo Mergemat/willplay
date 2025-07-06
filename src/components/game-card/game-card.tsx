@@ -14,7 +14,11 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { PRIORITY_COLORS, PRIORITY_ICONS } from "~/lib/constants";
+import {
+  PRIORITY_COLORS,
+  PRIORITY_ICONS,
+  PRIORITY_LABELS,
+} from "~/lib/constants";
 import type { GameStatus } from "~/lib/types";
 import { shimmer, toBase64 } from "~/lib/utils";
 import { MoveToButton } from "./move-to-button";
@@ -79,7 +83,7 @@ export function GameCard({
             variant="outline"
           >
             <PriorityIcon className="h-4 w-4" />
-            {gamelist.priority}
+            {PRIORITY_LABELS[gamelist.priority]}
           </Badge>
         </div>
       </div>
