@@ -1,5 +1,6 @@
 "use client";
 import { ClerkProvider, RedirectToSignIn, UserButton } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import Link from "next/link";
 import LoadingSpinner from "~/components/loading-spinner";
@@ -11,7 +12,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+      }}
+    >
       <ConvexClientProvider>
         <AuthLoading>
           <div className="flex min-h-screen flex-col items-center justify-center gap-2">
@@ -27,7 +32,7 @@ export default function DashboardLayout({
           </div>
         </Unauthenticated>
         <Authenticated>
-          <nav className="sticky top-0 z-50 flex items-center justify-between gap-4 bg-background p-4">
+          <nav className="sticky top-0 z-50 flex items-center justify-between gap-4 bg-background p-4 2xl:px-8">
             <Link className="font-bold text-3xl" href="/dashboard">
               WillPlay
             </Link>

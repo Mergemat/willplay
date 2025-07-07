@@ -23,6 +23,7 @@ import {
 } from "~/lib/constants";
 import type { GameStatus } from "~/lib/types";
 import { shimmer, toBase64 } from "~/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { MoveToButton } from "./move-to-button";
 
 export function GameCard({
@@ -70,21 +71,28 @@ export function GameCard({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
         <div className="absolute top-2 right-2 flex gap-2">
-          <Button
-            asChild
-            className="opacity-80 transition-opacity hover:opacity-100"
-            size="icon"
-            title="View on Steam"
-            variant="secondary"
-          >
-            <Link
-              href={`https://store.steampowered.com/app/${gamelist.game.steamId}`}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </Link>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button
+                aria-label="View on Steam"
+                asChild
+                className="opacity-80 transition-opacity hover:opacity-100"
+                size="icon"
+                variant="secondary"
+              >
+                <Link
+                  href={`https://store.steampowered.com/app/${gamelist.game.steamId}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>View on Steam</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
         <div className="absolute bottom-4 left-4 flex gap-2">
           <Badge

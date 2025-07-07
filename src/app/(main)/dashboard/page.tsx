@@ -45,7 +45,7 @@ export default async function DashboardPage() {
           </p>
         </div>
       </header>
-      <main className="flex-1 overflow-hidden">
+      <main>
         <Suspense fallback={<div>Loading...</div>}>
           <GameList preloadedGames={preloadedGames} />
         </Suspense>
