@@ -11,6 +11,7 @@ import { AddGameModal } from "./add-game-modal";
 import EmptyState from "./empty-state";
 import { GameCard, GameCardSkeleton } from "./game-card";
 import { Button } from "./ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export function GameList({
   preloadedGames,
@@ -86,25 +87,32 @@ export function GameList({
         </TabsList>
         <div className="flex w-full items-center justify-end gap-4">
           {isPreview ? null : <AddGameModal />}
-          <Button
-            onClick={() => {
-              // add to clipboard
-              toast.promise(
-                navigator.clipboard.writeText(
-                  `https://willplay.me/${session.user?.id}`
-                ),
-                {
-                  loading: "Copying link...",
-                  success: "Link copied to clipboard!",
-                  error: "Failed to copy link to clipboard.",
-                }
-              );
-            }}
-            size="icon"
-            variant="secondary"
-          >
-            <Share className="h-4 w-4" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {
+                  // add to clipboard
+                  toast.promise(
+                    navigator.clipboard.writeText(
+                      `https://willplay.me/${session.user?.id}`
+                    ),
+                    {
+                      loading: "Copying link...",
+                      success: "Link copied to clipboard!",
+                      error: "Failed to copy link to clipboard.",
+                    }
+                  );
+                }}
+                size="icon"
+                variant="secondary"
+              >
+                <Share className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Share</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
