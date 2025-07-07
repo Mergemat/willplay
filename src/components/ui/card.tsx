@@ -1,19 +1,21 @@
+import { type MotionProps, motion } from "motion/react";
 import { forwardRef, type HTMLAttributes } from "react";
 
 import { cn } from "~/lib/utils";
 
-const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div
-      className={cn(
-        "overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm",
-        className
-      )}
-      ref={ref}
-      {...props}
-    />
-  )
-);
+const Card = forwardRef<
+  HTMLDivElement,
+  HTMLAttributes<HTMLDivElement> & MotionProps
+>(({ className, ...props }, ref) => (
+  <motion.div
+    className={cn(
+      "overflow-hidden rounded-lg bg-card text-card-foreground shadow-sm",
+      className
+    )}
+    ref={ref}
+    {...props}
+  />
+));
 Card.displayName = "Card";
 
 const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
