@@ -4,6 +4,7 @@ import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback } from "react";
+import { toast } from "sonner";
 import { api } from "~/../convex/_generated/api";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -18,6 +19,7 @@ import {
   PRIORITY_COLORS,
   PRIORITY_ICONS,
   PRIORITY_LABELS,
+  STATUS_LABELS,
 } from "~/lib/constants";
 import type { GameStatus } from "~/lib/types";
 import { shimmer, toBase64 } from "~/lib/utils";
@@ -34,10 +36,17 @@ export function GameCard({
 
   const handleMoveTo = useCallback(
     (status: GameStatus) => {
-      changeGameStatus({
-        gameId: gamelist._id,
-        status,
-      });
+      toast.promise(
+        changeGameStatus({
+          gameId: gamelist._id,
+          status,
+        }),
+        {
+          loading: `Moving to ${STATUS_LABELS[status]}`,
+          success: `Moved to ${STATUS_LABELS[status]}`,
+          error: `Failed to move to ${STATUS_LABELS[status]}`,
+        }
+      );
     },
     [gamelist, changeGameStatus]
   );
@@ -49,11 +58,11 @@ export function GameCard({
   }
 
   return (
-    <Card className="group transition-all duration-200 hover:shadow-md">
+    <Card className="group hover:shadow-md">
       <div className="relative overflow-hidden">
         <Image
           alt={gamelist.game.name}
-          className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="h-48 w-full object-cover"
           height={200}
           placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(300, 200))}`}
           src={gamelist.game.image}
