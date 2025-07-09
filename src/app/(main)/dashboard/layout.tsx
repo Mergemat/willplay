@@ -4,7 +4,7 @@ import { dark } from "@clerk/themes";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import Link from "next/link";
 import LoadingSpinner from "~/components/loading-spinner";
-import { ConvexClientProvider } from "./convex-client-provider";
+import { ConvexClientProvider } from "../convex-client-provider";
 
 export default function DashboardLayout({
   children,

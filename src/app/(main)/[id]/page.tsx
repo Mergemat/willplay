@@ -30,6 +30,7 @@ export default async function DashboardPage({
   const { id } = await params;
   const token = await getAuthToken();
   const user = await getUserById(id);
+
   const preloadedGames = await preloadQuery(
     api.gamelist.getUserGameList,
     { userId: id },

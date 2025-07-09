@@ -9,11 +9,11 @@ export const getUserGameList = query({
     userId: v.optional(v.union(v.string(), v.null())),
   },
   handler: async (ctx, { userId }) => {
-    const identity = await ctx.auth.getUserIdentity();
-
-    if (identity === null) {
-      throw new ConvexError("Not authenticated");
-    }
+    // const identity = await ctx.auth.getUserIdentity();
+    //
+    // if (identity === null) {
+    //   throw new ConvexError("Not authenticated");
+    // }
 
     const allGameLists = await ctx.db
       .query("gamelist")
