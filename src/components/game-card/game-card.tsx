@@ -1,6 +1,6 @@
 "use client";
 import { useMutation } from "convex/react";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback } from "react";
@@ -70,30 +70,13 @@ export function GameCard({
           width={300}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
-        <div className="absolute top-2 right-2 flex gap-2">
-          <Tooltip>
-            <TooltipTrigger>
-              <Button
-                aria-label="View on Steam"
-                asChild
-                className="opacity-80 transition-opacity hover:opacity-100"
-                size="icon"
-                variant="secondary"
-              >
-                <Link
-                  href={`https://store.steampowered.com/app/${gamelist.game.steamId}`}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>View on Steam</p>
-            </TooltipContent>
-          </Tooltip>
+        <div className="absolute top-2 right-2 flex gap-4 opacity-0 transition-opacity duration-100 group-hover:opacity-100">
+          <ShareButton steamId={gamelist.game.steamId} />
         </div>
+        <div className="absolute top-2 left-2 flex gap-4 opacity-0 transition-opacity duration-100 group-hover:opacity-100">
+          <DeleteButton steamId={gamelist.game.steamId} />
+        </div>
+
         <div className="absolute bottom-4 left-4 flex gap-2">
           <Badge
             className={PRIORITY_COLORS[gamelist.priority]}
@@ -153,5 +136,59 @@ export function GameCardSkeleton() {
         </Button>
       </CardFooter>
     </Card>
+  );
+}
+
+function ShareButton({ steamId }: { steamId: string | number }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger>
+        <Button
+          aria-label="View on Steam"
+          asChild
+          className="opacity-80 transition-opacity hover:opacity-100"
+          size="icon"
+          variant="secondary"
+        >
+          <Link
+            href={`https://store.steampowered.com/app/${steamId}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <ExternalLink className="h-4 w-4" />
+          </Link>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>View on Steam</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+function DeleteButton({ steamId }: { steamId: string | number }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger>
+        <Button
+          aria-label="Remove from list"
+          asChild
+          className="opacity-80 transition-opacity hover:opacity-100"
+          size="icon"
+          variant="destructive"
+        >
+          <Link
+            href={`https://store.steampowered.com/app/${steamId}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <Trash className="h-4 w-4" />
+          </Link>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>Remove from list</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }
