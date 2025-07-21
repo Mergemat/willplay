@@ -55,10 +55,10 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       data-slot="button"
       whileHover={{
-        scale: 1.05,
+        scaleX: 1.02,
       }}
       whileTap={{
-        scale: 0.95,
+        scaleX: 0.98,
       }}
       {...props}
     />

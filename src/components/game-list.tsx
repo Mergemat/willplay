@@ -123,11 +123,7 @@ export function GameList({
         const isEmpty = !loading && games.length === 0;
 
         return (
-          <TabsContent
-            className="fade-in-50 animate-in transition-all duration-300"
-            key={status}
-            value={status}
-          >
+          <TabsContent key={status} value={status}>
             {isEmpty ? (
               <EmptyState />
             ) : (
