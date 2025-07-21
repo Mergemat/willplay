@@ -74,7 +74,7 @@ export function GameCard({
           <ShareButton steamId={gamelist.game.steamId} />
         </div>
         <div className="absolute top-2 left-2 flex gap-4 opacity-0 transition-opacity duration-100 group-hover:opacity-100">
-          <DeleteButton steamId={gamelist.game.steamId} />
+          <DeleteButton gamelist={gamelist} />
         </div>
 
         <div className="absolute bottom-4 left-4 flex gap-2">
@@ -166,24 +166,37 @@ function ShareButton({ steamId }: { steamId: string | number }) {
   );
 }
 
-function DeleteButton({ steamId }: { steamId: string | number }) {
+function DeleteButton({
+  gamelist,
+}: {
+  gamelist: (typeof api.gamelist.getUserGameList._returnType)[GameStatus][number];
+}) {
+  const removeGameFromList = useMutation(api.gamelist.removeGameFromList);
+
+  const handleRemove = useCallback(() => {
+    toast.promise(
+      removeGameFromList({
+        gameId: gamelist._id,
+      }),
+      {
+        loading: "Removing from list",
+        success: "Removed from list",
+        error: "Failed to remove from list",
+      }
+    );
+  }, [removeGameFromList, gamelist._id]);
+
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger asChild>
         <Button
           aria-label="Remove from list"
-          asChild
           className="opacity-80 transition-opacity hover:opacity-100"
+          onClick={handleRemove}
           size="icon"
           variant="destructive"
         >
-          <Link
-            href={`https://store.steampowered.com/app/${steamId}`}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <Trash className="h-4 w-4" />
-          </Link>
+          <Trash className="h-4 w-4" />
         </Button>
       </TooltipTrigger>
       <TooltipContent>
