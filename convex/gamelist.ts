@@ -131,3 +131,18 @@ export const changeGameStatus = mutation({
     });
   },
 });
+
+export const removeGameFromList = mutation({
+  args: {
+    gameId: v.id("gamelist"),
+  },
+  handler: async (ctx, { gameId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      throw new ConvexError("Not authenticated");
+    }
+
+    return await ctx.db.delete(gameId);
+  },
+});
