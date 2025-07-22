@@ -21,8 +21,9 @@ export default defineSchema({
     priority: v.union(v.literal("high"), v.literal("medium"), v.literal("low")),
     status: v.union(
       v.literal("wishlist"),
-      v.literal("playlist"),
-      v.literal("done")
+      v.literal("backlog"),
+      v.literal("playing"),
+      v.literal("completed")
     ),
   })
     .index("by_user", ["userId"])

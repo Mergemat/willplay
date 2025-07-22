@@ -2,27 +2,31 @@ import {
   CheckCircle,
   ChevronsDown,
   ChevronsUp,
-  Gamepad,
+  Gamepad2,
   Heart,
+  ListTodo,
   Minus,
 } from "lucide-react";
 
 export const STATUSES = {
   WISHLIST: "wishlist",
-  PLAYLIST: "playlist",
-  DONE: "done",
+  BACKLOG: "backlog",
+  PLAYING: "playing",
+  COMPLETED: "completed",
 } as const;
 
 export const STATUS_LABELS = {
   [STATUSES.WISHLIST]: "Wishlist",
-  [STATUSES.PLAYLIST]: "Playlist",
-  [STATUSES.DONE]: "Done",
+  [STATUSES.BACKLOG]: "Backlog",
+  [STATUSES.PLAYING]: "Playing",
+  [STATUSES.COMPLETED]: "Completed",
 } as const;
 
 export const STATUS_ICONS = {
   [STATUSES.WISHLIST]: Heart,
-  [STATUSES.PLAYLIST]: Gamepad,
-  [STATUSES.DONE]: CheckCircle,
+  [STATUSES.BACKLOG]: ListTodo,
+  [STATUSES.PLAYING]: Gamepad2,
+  [STATUSES.COMPLETED]: CheckCircle,
 } as const;
 
 export const PRIORITIES = {
