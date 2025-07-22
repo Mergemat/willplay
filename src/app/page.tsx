@@ -26,12 +26,12 @@ export default function HomePage() {
       <div className="container z-10 flex h-2/3 flex-col justify-center px-4 md:px-6">
         <div className="mx-auto flex max-w-4xl flex-col items-center justify-center space-y-8 text-center">
           <div className="space-y-6">
-            <h1 className="font-extrabold text-5xl text-white tracking-tight sm:text-6xl xl:text-7xl/none">
+            <h1 className="font-extrabold text-4xl text-white tracking-tight sm:text-6xl xl:text-7xl/none">
               Stop Drowning in Your
               <br />
               <span className="text-primary">Steam Library</span>
             </h1>
-            <p className="mx-auto text-lg text-muted-foreground leading-normal md:text-xl">
+            <p className="mx-auto text-base text-muted-foreground leading-normal md:text-xl">
               Remember those games you bought on a summer sale?
               <br />
               Did you ever play them?
@@ -51,7 +51,7 @@ export default function HomePage() {
         height={992}
         placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(1280, 992))}`}
         priority
-        src="https://stoic-cod-60.convex.cloud/api/storage/eacfece4-762c-40f9-b2e8-147db0c19790"
+        src="https://stoic-cod-60.convex.cloud/api/storage/52da9a2b-e4fa-46a6-92d9-1c114064b4a1"
         width={1280}
       />
       <div className="absolute bottom-0 left-0 h-96 w-full bg-gradient-to-b from-transparent to-background" />
