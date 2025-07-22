@@ -42,17 +42,21 @@ export const getUserGameList = query({
     const wishlistGames = gamelistsWithGames.filter(
       (game) => game.status === "wishlist"
     );
-    const playlistGames = gamelistsWithGames.filter(
-      (game) => game.status === "playlist"
+    const backlogGames = gamelistsWithGames.filter(
+      (game) => game.status === "backlog"
     );
-    const doneGames = gamelistsWithGames.filter(
-      (game) => game.status === "done"
+    const playingGames = gamelistsWithGames.filter(
+      (game) => game.status === "playing"
+    );
+    const completedGames = gamelistsWithGames.filter(
+      (game) => game.status === "completed"
     );
 
     return {
       wishlist: wishlistGames,
-      playlist: playlistGames,
-      done: doneGames,
+      backlog: backlogGames,
+      playing: playingGames,
+      completed: completedGames,
     };
   },
 });

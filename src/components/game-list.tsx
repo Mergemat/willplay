@@ -26,18 +26,21 @@ export function GameList({
 
   const {
     wishlist: wishlistGames,
-    playlist: playlistGames,
-    done: doneGames,
+    backlog: backlogGames,
+    playing: playingGames,
+    completed: completedGames,
   } = usePreloadedQuery(preloadedGames);
 
   const getGamesByStatus = (status: GameStatus) => {
     switch (status) {
       case STATUSES.WISHLIST:
         return wishlistGames || [];
-      case STATUSES.PLAYLIST:
-        return playlistGames || [];
-      case STATUSES.DONE:
-        return doneGames || [];
+      case STATUSES.BACKLOG:
+        return backlogGames || [];
+      case STATUSES.PLAYING:
+        return playingGames || [];
+      case STATUSES.COMPLETED:
+        return completedGames || [];
       default:
         return [];
     }
@@ -47,10 +50,12 @@ export function GameList({
     switch (status) {
       case STATUSES.WISHLIST:
         return !wishlistGames;
-      case STATUSES.PLAYLIST:
-        return playlistGames === undefined;
-      case STATUSES.DONE:
-        return doneGames === undefined;
+      case STATUSES.BACKLOG:
+        return backlogGames === undefined;
+      case STATUSES.PLAYING:
+        return playingGames === undefined;
+      case STATUSES.COMPLETED:
+        return completedGames === undefined;
       default:
         return false;
     }
