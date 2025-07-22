@@ -1,8 +1,6 @@
 "use client";
 import { useUser } from "@clerk/nextjs";
 import { type Preloaded, usePreloadedQuery } from "convex/react";
-import { Share } from "lucide-react";
-import { toast } from "sonner";
 import type { api } from "~/../convex/_generated/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { STATUS_ICONS, STATUS_LABELS, STATUSES } from "~/lib/constants";
@@ -10,8 +8,7 @@ import type { GameStatus } from "~/lib/types";
 import { AddGameModal } from "./add-game-modal";
 import EmptyState from "./empty-state";
 import { GameCard, GameCardSkeleton } from "./game-card";
-import { Button } from "./ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { ShareButton } from "./share-button";
 
 export function GameList({
   preloadedGames,
@@ -29,6 +26,7 @@ export function GameList({
     backlog: backlogGames,
     playing: playingGames,
     completed: completedGames,
+    userId,
   } = usePreloadedQuery(preloadedGames);
 
   const getGamesByStatus = (status: GameStatus) => {
@@ -92,32 +90,7 @@ export function GameList({
         </TabsList>
         <div className="flex w-full items-center justify-end gap-4">
           {isPreview ? null : <AddGameModal />}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => {
-                  // add to clipboard
-                  toast.promise(
-                    navigator.clipboard.writeText(
-                      `https://willplay.me/${session.user?.id}`
-                    ),
-                    {
-                      loading: "Copying link...",
-                      success: "Link copied to clipboard!",
-                      error: "Failed to copy link to clipboard.",
-                    }
-                  );
-                }}
-                size="icon"
-                variant="secondary"
-              >
-                <Share className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Share</p>
-            </TooltipContent>
-          </Tooltip>
+          <ShareButton userId={userId ?? session.user?.id} />
         </div>
       </div>
 

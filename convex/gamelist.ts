@@ -53,6 +53,7 @@ export const getUserGameList = query({
     );
 
     return {
+      userId,
       wishlist: wishlistGames,
       backlog: backlogGames,
       playing: playingGames,
