@@ -16,13 +16,14 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import {
+  GENRE_COLORS,
   PRIORITY_COLORS,
   PRIORITY_ICONS,
   PRIORITY_LABELS,
   STATUS_LABELS,
 } from "~/lib/constants";
 import type { GameStatus } from "~/lib/types";
-import { shimmer, toBase64 } from "~/lib/utils";
+import { cn, shimmer, toBase64 } from "~/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { MoveToButton } from "./move-to-button";
 
@@ -70,14 +71,17 @@ export function GameCard({
           width={300}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
-        <div className="absolute top-2 right-2 flex gap-4 opacity-0 transition-opacity duration-100 group-hover:opacity-100">
-          <ShareButton steamId={gamelist.game.steamId} />
-        </div>
-        <div className="absolute top-2 left-2 flex gap-4 opacity-0 transition-opacity duration-100 group-hover:opacity-100">
+        <div className="absolute top-2 right-2 flex gap-4 transition-opacity duration-100 md:opacity-0 md:group-hover:opacity-100">
           <DeleteButton gamelist={gamelist} />
         </div>
+      </div>
+      <CardHeader className="flex space-y-2 p-4 py-4">
+        <div className="flex w-full items-center justify-between gap-4">
+          <GameTitle
+            steamId={gamelist.game.steamId}
+            title={gamelist.game.name}
+          />
 
-        <div className="absolute bottom-4 left-4 flex gap-2">
           <Badge
             className={PRIORITY_COLORS[gamelist.priority]}
             variant="outline"
@@ -85,18 +89,6 @@ export function GameCard({
             <PriorityIcon className="h-4 w-4" />
             {PRIORITY_LABELS[gamelist.priority]}
           </Badge>
-        </div>
-      </div>
-      <CardHeader className="flex p-4 py-4">
-        <div className="flex w-full items-center justify-between gap-4">
-          <CardTitle className="line-clamp-1 font-bold text-2xl">
-            {gamelist.game.name}
-          </CardTitle>
-          {gamelist.game.genre && (
-            <Badge className="shrink-0" variant="secondary">
-              {gamelist.game.genre}
-            </Badge>
-          )}
         </div>
         <CardDescription className="line-clamp-2 text-sm">
           {gamelist.game.description}
@@ -139,25 +131,27 @@ export function GameCardSkeleton() {
   );
 }
 
-function ShareButton({ steamId }: { steamId: string | number }) {
+function GameTitle({
+  title,
+  steamId,
+}: {
+  title: string;
+  steamId: string | number;
+}) {
   return (
     <Tooltip>
       <TooltipTrigger>
-        <Button
-          aria-label="View on Steam"
-          asChild
-          className="opacity-80 transition-opacity hover:opacity-100"
-          size="icon"
-          variant="secondary"
+        <Link
+          className="flex items-center gap-2 text-left hover:underline"
+          href={`https://store.steampowered.com/app/${steamId}`}
+          rel="noopener noreferrer"
+          target="_blank"
         >
-          <Link
-            href={`https://store.steampowered.com/app/${steamId}`}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </Link>
-        </Button>
+          <CardTitle className="line-clamp-1 w-fit break-all font-bold text-2xl">
+            {title}
+          </CardTitle>
+          <ExternalLink className="h-3 w-3" />
+        </Link>
       </TooltipTrigger>
       <TooltipContent>
         <p>View on Steam</p>

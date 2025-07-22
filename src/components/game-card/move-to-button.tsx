@@ -8,6 +8,7 @@ import {
 import { STATUS_ICONS, STATUS_LABELS, STATUSES } from "~/lib/constants";
 import type { GameStatus } from "~/lib/types";
 
+// TODO: Make this an Edit button
 export function MoveToButton({
   currentStatus,
   changeGameStatus,
@@ -18,7 +19,9 @@ export function MoveToButton({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="sm">Move to</Button>
+        <Button size="sm" variant="outline">
+          Move to
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {Object.values(STATUSES).map((status) => {
