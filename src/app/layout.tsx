@@ -87,7 +87,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
     >
-      <body className="min-h-svh">
+      <body className="min-h-svh antialiased">
         {children}
         <Toaster richColors />
       </body>
