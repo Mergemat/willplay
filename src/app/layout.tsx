@@ -87,6 +87,12 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
     >
+      {/* <head>
+        <script
+          crossOrigin="anonymous"
+          src="//unpkg.com/react-scan/dist/auto.global.js"
+        />
+      </head> */}
       <body className="min-h-svh antialiased">
         {children}
         <Toaster richColors />

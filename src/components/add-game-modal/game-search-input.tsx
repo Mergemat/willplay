@@ -11,7 +11,8 @@ import { cn, shimmer, toBase64 } from "~/lib/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
-const gameApiLinkRegex = /\/app\/(\d+)/;
+const gameApiLinkRegex =
+  /(?:https?:\/\/)?(?:store\.steampowered\.com\/)?app\/(\d+)/i;
 
 export function GameInput({
   onGameSelect,
@@ -25,7 +26,7 @@ export function GameInput({
 
   const debouncedInputValue = useDebounce(inputValue, 200);
 
-  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [_showSearchResults, setShowSearchResults] = useState(false);
 
   useEffect(() => {
     if (debouncedInputValue) {
@@ -62,7 +63,6 @@ export function GameInput({
         onChange={(e) => {
           setInputValue(e.target.value);
           setIsLoading(true);
-          setShowSearchResults(true);
         }}
         placeholder={
           mode === "search"
@@ -81,20 +81,17 @@ export function GameInput({
         <X className="h-4 w-4" />
       </Button>
 
-      {showSearchResults ? (
-        <>
-          {mode === "search" && (
-            <SearchResults
-              isLoading={isLoading}
-              onGameSelect={handleGameSelect}
-              query={debouncedInputValue}
-            />
-          )}
-          {mode === "link" && (
-            <LinkResults onGameSelect={handleGameSelect} query={inputValue} />
-          )}
-        </>
-      ) : null}
+      {mode === "search" && (
+        <SearchResults
+          isLoading={isLoading}
+          onGameSelect={handleGameSelect}
+          query={debouncedInputValue}
+        />
+      )}
+      {mode === "link" && (
+        <LinkResults onGameSelect={handleGameSelect} query={inputValue} />
+      )}
+
       <p className="text-muted-foreground text-sm">
         Can't find the game? Try{" "}
         <Button
@@ -129,7 +126,7 @@ function SearchResults({
 
   return (
     <div className="relative">
-      {query && (
+      {!!query && (
         <GameSelect
           games={searchResults}
           handleSelectGame={(game: Partial<Doc<"games">>) => onGameSelect(game)}
@@ -181,9 +178,9 @@ function LinkResults({
 
   return (
     <div className="relative">
-      {game && (
+      {query && (
         <GameSelect
-          games={[game]}
+          games={game ? [game] : []}
           handleSelectGame={(selectedGame: Partial<Doc<"games">>) => {
             onGameSelect(selectedGame);
             setGame(undefined);
@@ -222,14 +219,14 @@ function GameSelect({
         <div className="flex items-center justify-center p-4">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
-        // biome-ignore lint/style/noNestedTernary: <>
-      ) : (games?.length ?? 0) > 0 ? (
+      ) : // biome-ignore lint/style/noNestedTernary: <>
+      (games?.length ?? 0) > 0 ? (
         <div className="max-h-60 overflow-y-auto overflow-x-hidden p-1">
           {games?.map((game) => (
             <Button
               asChild
               className="h-fit w-fit border-muted border-b"
-              key={game._id}
+              key={game._id ?? game.name}
               onClick={() => handleSelectGame(game)}
               variant="ghost"
             >
