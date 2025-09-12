@@ -16,5 +16,8 @@
       "jsxQuoteStyle": "double",
       "quoteStyle": "double"
     }
+  },
+  "files": {
+    "includes": ["!convex"]
   }
 }
