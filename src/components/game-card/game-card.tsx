@@ -16,14 +16,13 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import {
-  GENRE_COLORS,
   PRIORITY_COLORS,
   PRIORITY_ICONS,
   PRIORITY_LABELS,
   STATUS_LABELS,
 } from "~/lib/constants";
 import type { GameStatus } from "~/lib/types";
-import { cn, shimmer, toBase64 } from "~/lib/utils";
+import { shimmer, toBase64 } from "~/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { MoveToButton } from "./move-to-button";
 
