@@ -230,7 +230,7 @@ function GameSelect({
               onClick={() => handleSelectGame(game)}
               variant="ghost"
             >
-              <div className="w-full items-center gap-3 ">
+              <div className="w-full items-center gap-3">
                 <Image
                   alt={game.name ?? ""}
                   className="h-12 w-20 rounded-sm object-cover"
