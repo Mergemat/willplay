@@ -54,12 +54,6 @@ function Button({
     <Comp
       className={cn(buttonVariants({ variant, size, className }))}
       data-slot="button"
-      whileHover={{
-        scaleX: 1.02,
-      }}
-      whileTap={{
-        scaleX: 0.98,
-      }}
       {...props}
     />
   );
