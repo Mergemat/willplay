@@ -1,41 +1,41 @@
-interface PriceOverview {
+type PriceOverview = {
   currency: string;
   initial: number;
   final: number;
   discount_percent: number;
   initial_formatted: string;
   final_formatted: string;
-}
+};
 
-interface Category {
+type Category = {
   id: number;
   description: string;
-}
+};
 
-interface Genre {
+type Genre = {
   id: string;
   description: string;
-}
+};
 
-interface ContentDescriptors {
+type ContentDescriptors = {
   ids: unknown[];
   notes: null;
-}
+};
 
-interface RatingDetails {
+type RatingDetails = {
   rating_generated: string;
   rating: string;
   required_age: string;
   banned: string;
   use_age_gate: string;
   descriptors: string;
-}
+};
 
-interface Ratings {
+type Ratings = {
   dejus: RatingDetails;
   steam_germany: RatingDetails;
-}
-export interface AppData {
+};
+export type AppData = {
   type: string;
   name: string;
   steam_appid: number;
@@ -54,9 +54,9 @@ export interface AppData {
   background_raw: string;
   content_descriptors: ContentDescriptors;
   ratings: Ratings;
-}
+};
 
-export interface SteamApiResponse {
+export type SteamApiResponse = {
   success: boolean;
   data: AppData;
-}
+};
