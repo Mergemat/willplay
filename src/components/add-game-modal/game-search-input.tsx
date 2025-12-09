@@ -2,68 +2,58 @@ import { useAction, useQuery } from "convex/react";
 import { Loader2, Search, X } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { toast } from "sonner";
-import { api } from "~/../convex/_generated/api";
-import type { Doc } from "~/../convex/_generated/dataModel";
-import { useDebounce } from "~/hooks/use-debounce";
 import { cn, shimmer, toBase64 } from "~/lib/utils";
+import { api } from "../../../convex/_generated/api";
+import type { Doc } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
-const gameApiLinkRegex =
+const STEAM_LINK_REGEX =
   /(?:https?:\/\/)?(?:store\.steampowered\.com\/)?app\/(\d+)/i;
+
+type Game = Partial<Doc<"games">>;
+
+function extractSteamId(value?: string) {
+  const match = value?.match(STEAM_LINK_REGEX);
+  return match ? Number(match[1]) : null;
+}
 
 export function GameInput({
   onGameSelect,
 }: {
-  onGameSelect: (game: Partial<Doc<"games">>) => void;
+  onGameSelect: (game: Game) => void;
 }) {
   const [inputValue, setInputValue] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const deferredValue = useDeferredValue(inputValue);
 
-  const [mode, setMode] = useState<"search" | "link">("search");
+  const steamGameId = useMemo(() => extractSteamId(inputValue), [inputValue]);
 
-  const debouncedInputValue = useDebounce(inputValue, 200);
+  const mode: "search" | "link" = steamGameId ? "link" : "search";
+  const isLoading = inputValue !== deferredValue && deferredValue.length > 0;
 
-  const [_showSearchResults, setShowSearchResults] = useState(false);
-
-  useEffect(() => {
-    if (debouncedInputValue) {
-      setIsLoading(false);
-    }
-  }, [debouncedInputValue]);
-
-  const handleGameSelect = useCallback(
-    (game: Partial<Doc<"games">>) => {
+  const handleSelect = useCallback(
+    (game: Game) => {
       onGameSelect(game);
       setInputValue("");
-      setShowSearchResults(false);
     },
     [onGameSelect]
   );
 
-  const gameIdFromSteamLink = useMemo(() => {
-    const match = inputValue?.match(gameApiLinkRegex);
-    return match ? Number(match[1] ?? "") : null;
-  }, [inputValue]);
-
-  useEffect(() => {
-    if (gameIdFromSteamLink) {
-      setMode("link");
-    }
-  }, [gameIdFromSteamLink]);
-
   return (
     <div className="relative">
       <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
+
       <Input
-        autoFocus={false}
         className="pl-9"
-        onChange={(e) => {
-          setInputValue(e.target.value);
-          setIsLoading(true);
-        }}
+        onChange={(e) => setInputValue(e.target.value)}
         placeholder={
           mode === "search"
             ? "Search for a game..."
@@ -71,6 +61,7 @@ export function GameInput({
         }
         value={inputValue}
       />
+
       <Button
         className={cn("absolute top-1 right-1 size-7", !inputValue && "hidden")}
         onClick={() => setInputValue("")}
@@ -81,24 +72,21 @@ export function GameInput({
         <X className="h-4 w-4" />
       </Button>
 
-      {mode === "search" && (
+      {mode === "search" ? (
         <SearchResults
           isLoading={isLoading}
-          onGameSelect={handleGameSelect}
-          query={debouncedInputValue}
+          onSelect={handleSelect}
+          query={deferredValue}
         />
-      )}
-      {mode === "link" && (
-        <LinkResults onGameSelect={handleGameSelect} query={inputValue} />
+      ) : (
+        <LinkResults onSelect={handleSelect} query={deferredValue} />
       )}
 
       <p className="text-muted-foreground text-sm">
         Can't find the game? Try{" "}
         <Button
           className="px-0"
-          onClick={() =>
-            setMode((prevMode) => (prevMode === "link" ? "search" : "link"))
-          }
+          onClick={() => setInputValue("")}
           type="button"
           variant="link"
         >
@@ -111,95 +99,92 @@ export function GameInput({
 
 function SearchResults({
   query,
-  onGameSelect,
   isLoading,
+  onSelect,
 }: {
   query?: string;
-  onGameSelect: (game: Partial<Doc<"games">>) => void;
   isLoading: boolean;
+  onSelect: (game: Game) => void;
 }) {
-  const searchResults = useQuery(api.games.findGameByName, {
+  const results = useQuery(api.games.findGameByName, {
     name: query ?? "",
   });
 
-  const isPending = searchResults === undefined;
+  if (!query) {
+    return null;
+  }
 
   return (
-    <div className="relative">
-      {!!query && (
-        <GameSelect
-          games={searchResults}
-          handleSelectGame={(game: Partial<Doc<"games">>) => onGameSelect(game)}
-          isLoading={isLoading || isPending}
-        />
-      )}
-    </div>
+    <GameSelect
+      games={results}
+      isLoading={isLoading || results === undefined}
+      onSelect={onSelect}
+    />
   );
 }
 
 function LinkResults({
   query,
-  onGameSelect,
+  onSelect,
 }: {
   query?: string;
-  onGameSelect: (game: Partial<Doc<"games">>) => void;
+  onSelect: (game: Game) => void;
 }) {
-  const [game, setGame] = useState<Partial<Doc<"games">>>();
-  const [isPending, setIsPending] = useState(false);
-  const fetchGameByLink = useAction(api.games.getGameDetails);
+  const [game, setGame] = useState<Game | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const fetchGame = useAction(api.games.getGameDetails);
 
-  const gameIdFromSteamLink = useMemo(() => {
-    const match = query?.match(gameApiLinkRegex);
-    return match ? Number(match[1] ?? "") : null;
-  }, [query]);
+  const steamId = useMemo(() => extractSteamId(query), [query]);
 
   useEffect(() => {
-    if (gameIdFromSteamLink) {
-      setIsPending(true);
-      fetchGameByLink({ gameId: gameIdFromSteamLink }).then((result) => {
-        if (!result.success) {
-          setGame(undefined);
-          setIsPending(false);
-          toast.error(result.error);
-          return;
-        }
-        setGame(result.data);
-        setIsPending(false);
-      });
-    }
-  }, [gameIdFromSteamLink, fetchGameByLink]);
+    let cancelled = false;
 
-  useEffect(() => {
-    if (gameIdFromSteamLink === null && game) {
-      setGame(undefined);
+    if (!steamId) {
+      setGame(null);
       return;
     }
-  }, [gameIdFromSteamLink, game]);
+
+    setIsLoading(true);
+    fetchGame({ gameId: steamId }).then((res) => {
+      if (cancelled) {
+        return;
+      }
+
+      if (res.success) {
+        setGame(res.data);
+      } else {
+        toast.error(res.error);
+        setGame(null);
+      }
+      setIsLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [steamId, fetchGame]);
+
+  if (!query) {
+    return null;
+  }
 
   return (
-    <div className="relative">
-      {query && (
-        <GameSelect
-          games={game ? [game] : []}
-          handleSelectGame={(selectedGame: Partial<Doc<"games">>) => {
-            onGameSelect(selectedGame);
-            setGame(undefined);
-          }}
-          isLoading={isPending}
-        />
-      )}
-    </div>
+    <GameSelect
+      games={game ? [game] : []}
+      isLoading={isLoading}
+      onSelect={onSelect}
+    />
   );
 }
 
 function GameSelect({
   games,
   isLoading,
-  handleSelectGame,
+  onSelect,
 }: {
-  games?: Partial<Doc<"games">>[] | null;
+  games?: Game[] | null;
   isLoading: boolean;
-  handleSelectGame: (game: Partial<Doc<"games">>) => void;
+  onSelect: (game: Game) => void;
 }) {
   return (
     <motion.div
@@ -216,37 +201,33 @@ function GameSelect({
       }}
     >
       {isLoading ? (
-        <div className="flex items-center justify-center p-4">
+        <div className="flex justify-center p-4">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
-      ) : // biome-ignore lint/style/noNestedTernary: <>
-      (games?.length ?? 0) > 0 ? (
-        <div className="max-h-60 overflow-y-auto overflow-x-hidden p-1">
-          {games?.map((game) => (
+      ) : games && games.length > 0 ? (
+        <div className="max-h-60 overflow-y-auto">
+          {games.map((game) => (
             <Button
-              asChild
-              className="h-fit w-fit border-muted border-b"
+              className="w-full h-fit justify-start gap-3 border-muted border-b"
               key={game._id ?? game.name}
-              onClick={() => handleSelectGame(game)}
+              onClick={() => onSelect(game)}
               variant="ghost"
             >
-              <div className="w-full items-center gap-3">
-                <Image
-                  alt={game.name ?? ""}
-                  className="h-12 w-20 rounded-sm object-cover"
-                  height={100}
-                  placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(100, 100))}`}
-                  src={game.image ?? ""}
-                  width={100}
-                />
-                <div className="flex-1 overflow-hidden">
-                  <h2 className="truncate font-medium text-base">
-                    {game.name}
-                  </h2>
-                  <p className="truncate text-muted-foreground text-sm">
-                    {game.genre}
-                  </p>
-                </div>
+              <Image
+                alt={game.name ?? ""}
+                className="h-12 w-20 rounded-sm object-cover"
+                height={100}
+                placeholder={`data:image/svg+xml;base64,${toBase64(
+                  shimmer(100, 100)
+                )}`}
+                src={game.image ?? ""}
+                width={100}
+              />
+              <div className="overflow-hidden text-left">
+                <p className="truncate font-medium">{game.name}</p>
+                <p className="truncate text-muted-foreground text-sm">
+                  {game.genre}
+                </p>
               </div>
             </Button>
           ))}
